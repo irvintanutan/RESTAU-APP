@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.jik.irvin.restauapp.CheckOutActivity">
+
+    <include
+        android:id="@+id/app_bar2"
+        layout="@layout/app_bar2" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:weightSum="5">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
+            android:layout_weight="3"
+            android:padding="10dp"
+            app:cardCornerRadius="0dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:weightSum="20"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view_table"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="19"
+                    android:clipToPadding="false"
+                    android:scrollbars="vertical"
+                    android:layout_marginBottom="10dp"
+                    android:layout_alignParentLeft="true" />
+                <!--android:layout_alignParentBottom="true"--> />
+
+                <include
+                    android:id="@+id/action"
+                    layout="@layout/layout_total"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+
+        <android.support.v7.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            app:cardCornerRadius="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/button"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:padding="20dp"
+                    app:cardBackgroundColor="@color/colorPrimary"
+                    app:cardCornerRadius="10dp">
+
+                    <TextView
+                        android:id="@+id/table_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:text="Checkout"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+
+
+                </android.support.v7.widget.CardView>
+
+
+                <!--      <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                          xmlns:app="http://schemas.android.com/apk/res-auto"
+                          android:id="@+id/discount"
+                          android:layout_width="match_parent"
+                          android:layout_height="100dp"
+                          android:layout_margin="3dp"
+                          android:layout_weight="1"
+                          android:padding="20dp"
+                          app:cardBackgroundColor="#009688"
+                          app:cardCornerRadius="10dp">
+
+                          <TextView
+                              android:id="@+id/asdf"
+                              android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:layout_gravity="center"
+                              android:fontFamily="sans-serif-black"
+                              android:gravity="center"
+                              android:text="Discount"
+                              android:textStyle="bold"
+                              android:textColor="#FFFFFF"
+                              android:textSize="20sp" />
+
+
+                      </android.support.v7.widget.CardView>
+      -->
+
+                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/cancel"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:padding="20dp"
+                    app:cardBackgroundColor="#D50000"
+                    app:cardCornerRadius="10dp">
+
+                    <TextView
+                        android:id="@+id/asd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:text="Cancel"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+
+
+                </android.support.v7.widget.CardView>
+
+
+
+
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+</LinearLayout>
