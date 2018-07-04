@@ -30,7 +30,6 @@
                     android:layout_height="500dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
-                    android:scaleType="fitXY"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true" />
 

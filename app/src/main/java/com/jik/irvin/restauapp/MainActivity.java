@@ -2,10 +2,13 @@ package com.jik.irvin.restauapp;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,11 +20,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button login;
+    CardView login;
     EditText username, password;
     DatabaseHelper databaseHelper = new DatabaseHelper(this);
 
@@ -43,10 +47,14 @@ public class MainActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
 
+        username.setText(ModGlobal.baseURL);
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+
+                    databaseHelper.updateBaseUrl(username.getText().toString());
                 new SignInRequest(MainActivity.this).execute("");
 
             }
@@ -83,6 +91,14 @@ public class MainActivity extends AppCompatActivity {
             String json = "0";
             try {
                 Log.e("url" , databaseHelper.getBaseUrl());
+
+                JSONArray jsonArray = new JSONArray();
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("name" , "IRVIN");
+                jsonArray.put(jsonObject);
+
+
+
                 JSONArray menuItems = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-products-api", WebRequest.GET));
 
 
@@ -143,6 +159,18 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+                JSONArray tables = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-tables-api", WebRequest.GET));
+
+
+                for (int i = 0; i < tables.length(); i++) {
+                    JSONObject c = tables.getJSONObject(i);
+                    ModGlobal.tableModelList.add(new TableModel(
+                            c.getString("tbl_id"),
+                            c.getString("name"),
+                            c.getString("status")
+                    ));
+                }
+
 
                 json = "1";
             } catch (JSONException e) {
@@ -165,5 +193,39 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Confirm");
+        builder.setMessage("Are you sure you want to quit ?");
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing but close the dialog
+                // Do nothing
+                dialog.dismiss();
+                finish();
+                System.exit(0);
+
+            }
+
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+
     }
 }

@@ -63,6 +63,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
+
+    public void updateBaseUrl(String url) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(base_url, url);
+        // Inserting Row
+        db.update(tbl_base, values, null, null);
+        db.close(); // Closing database connection
+    }
+
     public boolean hasBaseUrl(){
         boolean ind = false;
         String selectQuery = "SELECT  * FROM " + tbl_base;

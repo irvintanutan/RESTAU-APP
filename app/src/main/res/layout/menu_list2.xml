@@ -22,8 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/album_cover_height"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:scaleType="fitXY" />
+                android:clickable="true"  />
 
             <TextView
                 android:id="@+id/title"
@@ -45,7 +44,7 @@
                 android:paddingLeft="@dimen/album_title_padding"
                 android:paddingRight="@dimen/album_title_padding"
                 android:textStyle="bold"
-                android:textSize="13dp" />
+                android:textSize="@dimen/songs_count" />
 
 
         </RelativeLayout>

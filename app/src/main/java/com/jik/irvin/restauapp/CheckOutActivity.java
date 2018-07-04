@@ -1,7 +1,10 @@
 package com.jik.irvin.restauapp;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -21,22 +24,33 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 
 public class CheckOutActivity extends AppCompatActivity {
 
-    private CardView checkout, cancel;
+    private CardView dineIn, cancel, takeOut;
     private TextView totalPrice;
     private RecyclerView recyclerView;
+    private RecyclerView recyclerViewTable;
     private ItemDetailsAdapter itemDetailsAdapter;
+    private TableAdapter tableAdapter;
+    DatabaseHelper databaseHelper = new DatabaseHelper(this);
+    boolean warning = false;
+
 
     private boolean isExist = false;
-    private int itemDetailsIndex = 0 , itemDetailsQty = 1;
+    private int itemDetailsIndex = 0, itemDetailsQty = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +62,11 @@ public class CheckOutActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_check_out);
 
-        checkout = findViewById(R.id.button);
+        dineIn = findViewById(R.id.button);
         cancel = findViewById(R.id.cancel);
+        takeOut = findViewById(R.id.takeOut);
         totalPrice = findViewById(R.id.totalPrice);
+        recyclerViewTable = findViewById(R.id.recycler_view_table_list);
 
         Toolbar tb = findViewById(R.id.app_bar2);
         setSupportActionBar(tb);
@@ -64,25 +80,20 @@ public class CheckOutActivity extends AppCompatActivity {
         ab.setDisplayShowTitleEnabled(true); // disable the default title element here (for centered title)
 
 
-
-        checkout.setOnClickListener(new View.OnClickListener() {
+        dineIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              /*  AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
 
-                builder.setTitle("Confirm");
-                builder.setMessage("Are you sure you want to checkout ?");
+                builder.setTitle("DINE IN");
+                builder.setMessage("Are you sure you want to place the order ?");
 
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
                         // Do nothing but close the dialog
                         // Do nothing
-                        if (ModGlobal.TRANSACTION_TYPE.equals("NORMAL"))
-                            new Sync(CheckoutActivity.this).execute("");
-                        else
-                            new SyncUpdate(CheckoutActivity.this).execute("");
-
+                        new Sync(CheckOutActivity.this).execute("DINE-IN");
                     }
 
                 });
@@ -95,7 +106,7 @@ public class CheckOutActivity extends AppCompatActivity {
                 });
 
                 AlertDialog alert = builder.create();
-                alert.show();*/
+                alert.show();
 
             }
         });
@@ -107,7 +118,7 @@ public class CheckOutActivity extends AppCompatActivity {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
 
-                builder.setTitle("Confirm");
+                builder.setTitle("CANCEL");
                 builder.setMessage("Are you sure you want to cancel this transaction ?");
 
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -116,6 +127,9 @@ public class CheckOutActivity extends AppCompatActivity {
                         // Do nothing but close the dialog
                         // Do nothing
                         ModGlobal.itemDetailsModelList.clear();
+                        ModGlobal.tableId.clear();
+                        ModGlobal.transType = "NORMAL";
+
                         startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
                         finish();
 
@@ -131,85 +145,28 @@ public class CheckOutActivity extends AppCompatActivity {
                 });
 
                 AlertDialog alert = builder.create();
+                alert.setCancelable(false);
                 alert.show();
             }
         });
 
 
-
-        recyclerView = findViewById(R.id.recycler_view_table);
-        itemDetailsAdapter = new ItemDetailsAdapter(this, ModGlobal.itemDetailsModelList);
-
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(itemDetailsAdapter);
-
-        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
+        takeOut.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view, int position) {
-               MenuModel menu = ModGlobal.menuModelList.get(ModGlobal.itemDetailsModelList.get(position).getPosition());
-                PopUpMenu(menu);
-            }
+            public void onClick(View v) {
 
-            @Override
-            public void onLongClick(View view, final int position) {
-              /*  AlertDialog.Builder builder = new AlertDialog.Builder(CheckoutActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
 
-                builder.setTitle("Confirm");
-                builder.setMessage("Are you sure you want to remove" + ModGlobal.itemDetailsModelList.get(position).getMenuName() + "?");
+                builder.setTitle("TAKE OUT");
+                builder.setMessage("Are you sure you want to place the order ?");
 
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
                         // Do nothing but close the dialog
                         // Do nothing
-
-                        ItemDetailsModel itemDetailsModel = ModGlobal.itemDetailsModelList.get(position);
-                        Log.e("asd" , Integer.toString(itemDetailsModel.getMenuID()));
-                        HashMap<String , String> x = new HashMap<String , String>();
-                        for (int a = 0 ; a < ModGlobal.runningTotal.size() ; a++){
-                            x = ModGlobal.runningTotal.get(a);
-
-                            Log.e("menusada" , x.get("ingredient_id") + " " + x.get("menu_id") + " " + itemDetailsModel.getMenuID());
-
-                            if (Integer.parseInt(x.get("menu_id")) == itemDetailsModel.getMenuID()) {
-                                Log.e("niusulod1" , "nisulod1");
-                                HashMap<String , String> y = new HashMap<String , String>();
-                                y.put("ingredient_id", x.get("ingredient_id"));
-                                y.put("value", "0.00");
-                                y.put("menu_id" , x.get("menu_id"));
-                                ModGlobal.runningTotal.set(a , y);
-                            }
-                        }
-
-                        x = new HashMap<String , String>();
-                        for (int a = 0 ; a < ModGlobal.runningTotalWhenEnabled.size() ; a++){
-                            x = ModGlobal.runningTotalWhenEnabled.get(a);
-
-                            Log.e("menusada" , x.get("menu_id") + " " + itemDetailsModel.getMenuID());
-
-                            if (Integer.parseInt(x.get("menu_id")) == itemDetailsModel.getMenuID()) {
-                                Log.e("niusulod2" , "nisulod2");
-                                HashMap<String , String> y = new HashMap<String , String>();
-                                y.put("ingredient_id", x.get("ingredient_id"));
-                                y.put("value", "0.00");
-                                y.put("menu_id" , x.get("menu_id"));
-                                ModGlobal.runningTotalWhenEnabled.set(a , y);
-                            }
-                        }
-
-
-                        ModGlobal.itemDetailsModelList.remove(position);
-                        itemDetailsAdapter.notifyDataSetChanged();
-                        computeTotal();
-
-                        if(ModGlobal.itemDetailsModelList.isEmpty()){
-                            ModGlobal.runningTotal.clear();
-                            ModGlobal.runningTotalWhenEnabled.clear();
-                            new Intent(CheckoutActivity.this , TableActivity.class);
-                            finish();
-                        }
+                        ModGlobal.tableId.clear();
+                        new Sync(CheckOutActivity.this).execute("TAKE-OUT");
 
                     }
 
@@ -223,12 +180,136 @@ public class CheckOutActivity extends AppCompatActivity {
                 });
 
                 AlertDialog alert = builder.create();
-                alert.show();*/
+                alert.setCancelable(false);
+                alert.show();
+            }
+        });
+
+
+        recyclerView = findViewById(R.id.recycler_view_table);
+        itemDetailsAdapter = new ItemDetailsAdapter(this, ModGlobal.itemDetailsModelList);
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 4);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(itemDetailsAdapter);
+
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                MenuModel menu = ModGlobal.menuModelList.get(ModGlobal.itemDetailsModelList.get(position).getPosition());
+                PopUpMenu(menu);
+            }
+
+            @Override
+            public void onLongClick(View view, final int position) {
+                ///do something here for long press
+                if (ModGlobal.itemDetailsModelList.size() == 1) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
+
+                    builder.setTitle("WARNING");
+                    builder.setMessage("You are not allowed to remove single product in a transaction" + ModGlobal.itemDetailsModelList.get(position).getMenuName() + "?");
+
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
+
+                    builder.setTitle("Confirm");
+                    builder.setMessage("Are you sure you want to remove" + ModGlobal.itemDetailsModelList.get(position).getMenuName() + "?");
+
+                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            ModGlobal.itemDetailsModelList.remove(position);
+                            itemDetailsAdapter.notifyDataSetChanged();
+                            computeTotal();
+
+                        }
+
+                    });
+                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
             }
         }));
 
+
+        RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(this, 2);
+        recyclerViewTable.setLayoutManager(mLayoutManager1);
+        recyclerViewTable.setItemAnimator(new DefaultItemAnimator());
+        ModGlobal.tableAdapter = new TableAdapter(this, ModGlobal.tableModelList);
+        recyclerViewTable.setAdapter(ModGlobal.tableAdapter);
+
+        recyclerViewTable.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                try {
+                    TableModel table = ModGlobal.tableModelList.get(position);
+                    if (table.getStatus().equals("Occupied"))
+                        Toast.makeText(getApplicationContext(), table.getName() + " is not available", Toast.LENGTH_SHORT).show();
+                    else {
+                        if (table.getStatus().equals("Available")) {
+                            table.setStatus("Selected");
+                            addTable(Integer.parseInt(table.getTableId()));
+                            ModGlobal.tableAdapter.notifyDataSetChanged();
+                        } else {
+                            table.setStatus("Available");
+                            removeTable(Integer.parseInt(table.getTableId()));
+                            ModGlobal.tableAdapter.notifyDataSetChanged();
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e("asd", "something went wrong");
+                }
+
+            }
+
+            @Override
+            public void onLongClick(View view, final int position) {
+
+
+            }
+        }));
+
+
         computeTotal();
+
+
+        startService(new Intent(this, MyService.class));
     }
+
+
+    void addTable(int id) {
+        ModGlobal.tableId.add(id);
+    }
+
+    void removeTable(int id) {
+        for (int a = 0; a < ModGlobal.tableId.size(); a++) {
+            if (ModGlobal.tableId.get(a) == id)
+                ModGlobal.tableId.remove(a);
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -248,7 +329,7 @@ public class CheckOutActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
+        stopService(new Intent(CheckOutActivity.this, MyService.class));
         startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
         finish();
 
@@ -334,13 +415,13 @@ public class CheckOutActivity extends AppCompatActivity {
 
                     ModGlobal.itemDetailsModelList.set(itemDetailsIndex, new ItemDetailsModel(menuModel.getProd_id(),
                             menuModel.getPrice(), Integer.parseInt(quantity.getText().toString()),
-                            menuModel.getImg() , menuModel.getName() , menuModel.getCat_id() , menuModel.getPosition()));
+                            menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition()));
 
                 } else {
 
                     ModGlobal.itemDetailsModelList.add(new ItemDetailsModel(menuModel.getProd_id(),
                             menuModel.getPrice(), Integer.parseInt(quantity.getText().toString()),
-                            menuModel.getImg() , menuModel.getName() , menuModel.getCat_id() , menuModel.getPosition()));
+                            menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition()));
 
                 }
 
@@ -380,8 +461,279 @@ public class CheckOutActivity extends AppCompatActivity {
         }
 
 
+        totalPrice.setText("Total price :    Php " + dec.format(total) + "   ");
 
-        totalPrice.setText("₱" + dec.format(total));
+    }
+
+
+    class Sync extends AsyncTask<String, String, String> {
+
+        Context serviceContext;
+        WebRequest wr = new WebRequest();
+        ProgressDialog progressDialog;
+
+        public Sync(Context context) {
+            this.serviceContext = context;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(serviceContext);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle("PLEASE WAIT");
+            progressDialog.setMessage("Placing Order");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            String json = "";
+            try {
+                if (ModGlobal.transType.equals("NORMAL")) {
+                    JSONObject mainJsonObject = new JSONObject();
+                    JSONArray mainJsonArray = new JSONArray();
+
+                    JSONArray detailsArray = new JSONArray();
+                    JSONObject detailsObject = new JSONObject();
+                    detailsObject.put("order_type", params[0]);
+                    detailsObject.put("user_id", 103);
+                    detailsArray.put(detailsObject);
+
+
+                    mainJsonObject.put("details", detailsArray);
+
+
+                    JSONArray packageArray = new JSONArray();
+                    JSONArray productsArray = new JSONArray();
+
+                    List<ItemDetailsModel> itemDetailsModels = ModGlobal.itemDetailsModelList;
+
+
+                    for (ItemDetailsModel itemDetailsModel : itemDetailsModels) {
+                        JSONObject packageObject = new JSONObject();
+                        JSONObject productsObject = new JSONObject();
+                        if (itemDetailsModel.getCatID().equals("200")) {
+
+                            packageObject.put("pack_id", itemDetailsModel.getProdID() - 1000);
+                            packageObject.put("qty", itemDetailsModel.getMenuQty());
+                            packageArray.put(packageObject);
+
+                        } else {
+
+                            productsObject.put("prod_id", itemDetailsModel.getProdID());
+                            productsObject.put("qty", itemDetailsModel.getMenuQty());
+                            productsArray.put(productsObject);
+
+                        }
+
+                    }
+
+                    mainJsonObject.put("products", productsArray);
+                    mainJsonObject.put("packages", packageArray);
+
+                    JSONArray tableArray = new JSONArray();
+
+
+                    if (params[0].equals("DINE-IN")) {
+
+                        if (ModGlobal.tableId.isEmpty()) {
+                            JSONObject tableObject = new JSONObject();
+                            tableObject.put("tbl_id", 0);
+                            tableArray.put(tableObject);
+                        } else {
+                            removeTable(0);
+                            for (int a = 0; a < ModGlobal.tableId.size(); a++) {
+                                JSONObject tableObject = new JSONObject();
+                                tableObject.put("tbl_id", ModGlobal.tableId.get(a));
+                                tableArray.put(tableObject);
+                            }
+                        }
+
+                        mainJsonObject.put("tables", tableArray);
+                    }
+
+
+                    mainJsonArray.put(mainJsonObject);
+                    String load = mainJsonArray.toString();
+                    Log.e("asd", load);
+
+                    String response = WebRequest.makePostRequest(databaseHelper.getBaseUrl() + "add-transactions-api",
+                            load, serviceContext);
+
+
+                    Log.e("response", response);
+                } else {
+                    JSONObject mainJsonObject = new JSONObject();
+                    JSONArray mainJsonArray = new JSONArray();
+
+                    JSONArray detailsArray = new JSONArray();
+                    JSONObject detailsObject = new JSONObject();
+                    detailsObject.put("order_type", params[0]);
+                    detailsObject.put("status", "ONGOING");
+                    detailsArray.put(detailsObject);
+
+
+                    mainJsonObject.put("details", detailsArray);
+
+
+                    JSONArray packageArray = new JSONArray();
+                    JSONArray productsArray = new JSONArray();
+
+                    List<ItemDetailsModel> itemDetailsModels = ModGlobal.itemDetailsModelList;
+
+
+                    for (ItemDetailsModel itemDetailsModel : itemDetailsModels) {
+                        JSONObject packageObject = new JSONObject();
+                        JSONObject productsObject = new JSONObject();
+                        if (itemDetailsModel.getCatID().equals("200")) {
+
+                            packageObject.put("pack_id", itemDetailsModel.getProdID() - 1000);
+                            packageObject.put("qty", itemDetailsModel.getMenuQty());
+                            packageArray.put(packageObject);
+
+                        } else {
+
+                            productsObject.put("prod_id", itemDetailsModel.getProdID());
+                            productsObject.put("qty", itemDetailsModel.getMenuQty());
+                            productsArray.put(productsObject);
+
+                        }
+
+                    }
+
+                    mainJsonObject.put("products", productsArray);
+                    mainJsonObject.put("packages", packageArray);
+
+                    JSONArray tableArray = new JSONArray();
+
+                    if (params[0].equals("DINE-IN")) {
+
+                        if (ModGlobal.tableId.isEmpty()) {
+                            JSONObject tableObject = new JSONObject();
+                            tableObject.put("tbl_id", 0);
+                            tableArray.put(tableObject);
+                        } else {
+                            removeTable(0);
+                            for (int a = 0; a < ModGlobal.tableId.size(); a++) {
+                                JSONObject tableObject = new JSONObject();
+                                tableObject.put("tbl_id", ModGlobal.tableId.get(a));
+                                tableArray.put(tableObject);
+                            }
+                        }
+
+                        mainJsonObject.put("tables", tableArray);
+                    }
+                    mainJsonArray.put(mainJsonObject);
+                    String load = mainJsonArray.toString();
+                    Log.e("asd", load);
+
+                    String response = WebRequest.makePostRequest(databaseHelper.getBaseUrl() + "reset-transactions-api/" + ModGlobal.transactionId,
+                            load, serviceContext);
+
+
+                    Log.e("response", response);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                warning = true;
+                Log.e("asd", e.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return json;
+        }
+
+
+        @Override
+        protected void onPostExecute(String strFromDoInBg) {
+            progressDialog.dismiss();
+
+
+            if (!warning) {
+                ModGlobal.itemDetailsModelList.clear();
+                ModGlobal.tableId.clear();
+                //ModGlobal.clear();
+                updateTable("CHECKOUT");
+                AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);
+
+                builder.setTitle("Information");
+                builder.setMessage("Transaction Successful!");
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        // Do nothing
+
+                        startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
+                        finish();
+                        dialog.dismiss();
+
+                    }
+
+                });
+
+                AlertDialog alert = builder.create();
+                alert.setCancelable(false);
+                alert.show();
+
+            } else {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);
+
+                builder.setTitle("WARNING");
+                builder.setMessage("Can't access server");
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        // Do nothing
+                        dialog.dismiss();
+
+                    }
+
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+
+        }
+
+
+    }
+
+    void updateTable(String process) {
+        switch (process) {
+            case "CANCEL": {
+
+                for (int a = 0; a < ModGlobal.tableModelList.size(); a++) {
+                    TableModel table = ModGlobal.tableModelList.get(a);
+                    if (table.getStatus().equals("Selected")) {
+                        ModGlobal.tableModelList.set(a, new TableModel(
+                                table.getTableId(), table.getName(), "Available"));
+                    }
+                }
+            }
+            case "CHECKOUT": {
+                for (int a = 0; a < ModGlobal.tableModelList.size(); a++) {
+                    TableModel table = ModGlobal.tableModelList.get(a);
+                    if (table.getStatus().equals("Selected")) {
+                        ModGlobal.tableModelList.set(a, new TableModel(
+                                table.getTableId(), table.getName(), "Occupied"));
+                    }
+                }
+            }
+
+        }
 
     }
 }

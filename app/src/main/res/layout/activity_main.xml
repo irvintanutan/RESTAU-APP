@@ -10,10 +10,10 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/bgpic"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true" />
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/bgpic" />
 
     <LinearLayout
         android:layout_width="400dp"
@@ -25,67 +25,80 @@
         android:padding="20dp">
 
         <LinearLayout
-            android:padding="3dp"
-            android:layout_marginBottom="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="3dp">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/ic_perm_identity_white_24dp"
-                />
+                android:src="@drawable/ic_perm_identity_white_24dp" />
+
             <EditText
                 android:id="@+id/username"
-                android:textColor="#FFFFFF"
-                android:hint="Username"
-                android:textColorHint="#FFFFFF"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:hint="Username"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
 
-            android:padding="3dp"
-            android:layout_marginBottom="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="3dp">
+
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/ic_lock_white_24dp"
-                />
+                android:src="@drawable/ic_lock_white_24dp" />
+
             <EditText
                 android:id="@+id/password"
-                android:textColor="#FFFFFF"
-                android:hint="Password"
-                android:textColorHint="#FFFFFF"
-                android:inputType="textPassword"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF" />
         </LinearLayout>
 
 
-        <Button
+        <android.support.v7.widget.CardView
             android:id="@+id/login"
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="Log In"
-            android:textSize="20dp"
-            android:textColor="#FFFFFF"
-            android:background="#F44336"
-            />
+            android:layout_height="60dp"
+            android:elevation="3dp"
+            android:padding="20dp"
+            app:cardBackgroundColor="#F44336"
+            app:cardCornerRadius="5dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="sans-serif-condensed"
+                    android:gravity="center"
+                    android:text="Log In"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
     </LinearLayout>
 
 </RelativeLayout>

@@ -3,39 +3,48 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:background="#F44336"
-    android:elevation="10dp"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:elevation="@dimen/_10sdp"
+    android:gravity="center_vertical"
+    android:padding="@dimen/_3sdp"
     app:theme="@style/MyCustomToolbar">
 
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_gravity="right"
-        >
+        android:orientation="horizontal">
 
         <android.support.v7.widget.CardView
-            android:id="@+id/button_categories"
+            android:id="@+id/view_transaction"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:layout_marginRight="10dp"
-            android:elevation="3dp"
-            android:padding="20dp"
-            android:visibility="gone"
-            app:cardBackgroundColor="#2196F3"
-            card_view:cardCornerRadius="10dp">
+            android:layout_height="wrap_content"
+            android:elevation="@dimen/_3sdp"
+            app:cardBackgroundColor="#9C27B0"
+            app:cardCornerRadius="10dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:layout_margin="10dp"
-                android:text="SEARCH CATEGORIES"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:src="@drawable/round_view_list_white_18dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:layout_margin="@dimen/_7sdp"
+                    android:text="VIEW TRANSACTION LIST"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
         </android.support.v7.widget.CardView>
 
@@ -43,22 +52,32 @@
         <android.support.v7.widget.CardView
             android:id="@+id/button_proceed"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:elevation="3dp"
-            android:padding="20dp"
-            app:cardBackgroundColor="#673AB7"
-            card_view:cardCornerRadius="10dp">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:elevation="@dimen/_3sdp"
+            app:cardBackgroundColor="#E91E63"
+            app:cardCornerRadius="10dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:layout_margin="10dp"
-                android:text="VIEW ORDERS LIST >>"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:src="@drawable/round_shopping_cart_white_18dp" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:layout_margin="@dimen/_7sdp"
+                    android:text="VIEW ORDERS LIST"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </android.support.v7.widget.CardView>
 
     </LinearLayout>
