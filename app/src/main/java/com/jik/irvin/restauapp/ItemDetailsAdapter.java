@@ -25,7 +25,7 @@ public class ItemDetailsAdapter extends RecyclerView.Adapter<ItemDetailsAdapter.
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
-        TextView title, price;
+        TextView title, price, discount;
 
 
         public MyViewHolder(View view) {
@@ -34,6 +34,7 @@ public class ItemDetailsAdapter extends RecyclerView.Adapter<ItemDetailsAdapter.
             imageView = view.findViewById(R.id.thumbnail);
             title = view.findViewById(R.id.title);
             price = view.findViewById(R.id.price);
+            discount = view.findViewById(R.id.discount);
 
         }
     }
@@ -58,10 +59,16 @@ public class ItemDetailsAdapter extends RecyclerView.Adapter<ItemDetailsAdapter.
         DecimalFormat dec=new DecimalFormat("#,##0.00");
 
         holder.price.setText("QTY : " + itemDetailsModels.get(position).getMenuQty()
-                            + "     TOTAL :  ₱" + dec.format(Double.parseDouble(itemDetailsModels.get(position).getMenuPrice())*
+                            + "   ₱" + dec.format(Double.parseDouble(itemDetailsModels.get(position).getMenuPrice())*
                                  itemDetailsModels.get(position).getMenuQty()));
 
         holder.title.setText(itemDetailsModels.get(position).getMenuName());
+
+     /*   if (ModGlobal.getLessPrice(itemDetailsModels.get(position).getProdID()).equals("0")){
+            holder.discount.setText(null);
+        }else {
+            holder.discount.setText("(-" +  ModGlobal.getLessPrice(itemDetailsModels.get(position).getProdID()) + ")");
+        }*/
 
         if (!itemDetailsModels.get(position).getCatID().equals("200")) {
             Glide.with(mContext).load(ModGlobal.baseURL + "uploads/products/" + itemDetailsModels.get(position).getUrl()).into(holder.imageView);

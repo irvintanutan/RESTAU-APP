@@ -21,13 +21,13 @@
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="@dimen/_10sdp"
                 android:layout_weight="3">
 
                 <ImageView
                     android:id="@+id/thumbnail"
-                    android:layout_width="600dp"
-                    android:layout_height="500dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:layout_alignParentTop="true"
@@ -50,7 +50,8 @@
                     android:paddingRight="@dimen/album_title_padding"
                     android:paddingTop="@dimen/album_title_padding"
                     android:textColor="@color/album_title"
-                    android:textSize="25dp" />
+                    android:textStyle="bold"
+                    android:textSize="@dimen/_10ssp" />
 
                 <TextView
                     android:id="@+id/price"
@@ -60,7 +61,7 @@
                     android:paddingBottom="@dimen/songs_count_padding_bottom"
                     android:paddingLeft="@dimen/album_title_padding"
                     android:paddingRight="@dimen/album_title_padding"
-                    android:textSize="20dp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <TextView
                     android:id="@+id/description"
@@ -70,7 +71,7 @@
                     android:paddingBottom="@dimen/songs_count_padding_bottom"
                     android:paddingLeft="@dimen/album_title_padding"
                     android:paddingRight="@dimen/album_title_padding"
-                    android:textSize="20dp" />
+                    android:textSize="@dimen/_7ssp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -82,16 +83,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_margin="5dp"
+                        android:layout_margin="@dimen/_5sdp"
                         android:text="Quantity : "
-                        android:textSize="20dp"
+                        android:textSize="@dimen/_7ssp"
                         android:textStyle="bold" />
 
                     <ImageButton
                         android:id="@+id/minus"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_margin="5dp"
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_margin="@dimen/_2sdp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/minus" />
 
@@ -100,16 +101,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_margin="5dp"
+                        android:layout_margin="@dimen/_5sdp"
                         android:text="1"
-                        android:textSize="15dp"
+                        android:textSize="@dimen/_7ssp"
                         android:textStyle="bold" />
 
                     <ImageButton
                         android:id="@+id/plus"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_margin="5dp"
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_margin="@dimen/_2sdp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/plus" />
 

@@ -12,16 +12,11 @@ import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -96,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("name" , "IRVIN");
                 jsonArray.put(jsonObject);
-
+                ModGlobal.companyConfigModels.clear();
 
 
                 JSONArray menuItems = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-products-api", WebRequest.GET));
@@ -115,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
                             c.getString("encoded"),
                             c.getString("img"),
                             c.getInt("item_count"),
-                            i
-
-                    ));
+                            i,
+                            c.getString("less_price"),
+                            c.getBoolean("is_discounted")));
                 }
 
                 int counter = ModGlobal.menuModelList.size();
@@ -137,9 +132,9 @@ public class MainActivity extends AppCompatActivity {
                             c.getString("encoded"),
                             c.getString("img"),
                             c.getInt("prod_count"),
-                            counter
-
-                    ));
+                            counter,
+                            c.getString("less_price"),
+                            c.getBoolean("is_discounted")));
                 }
 
 
@@ -158,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-
                 JSONArray tables = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-tables-api", WebRequest.GET));
 
 
@@ -168,6 +162,21 @@ public class MainActivity extends AppCompatActivity {
                             c.getString("tbl_id"),
                             c.getString("name"),
                             c.getString("status")
+                    ));
+                }
+
+
+                JSONArray companyConfig = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-store-config-api", WebRequest.GET));
+                for (int i = 0; i < companyConfig.length(); i++) {
+                    JSONObject c = companyConfig.getJSONObject(i);
+                    ModGlobal.companyConfigModels.add(new CompanyConfigModel(
+                            c.getString("name"),
+                            c.getString("address"),
+                            c.getString("city"),
+                            c.getString("tin"),
+                            c.getString("vat"),
+                            c.getString("bs_price"),
+                            c.getString("img")
                     ));
                 }
 

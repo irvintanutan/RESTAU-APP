@@ -208,7 +208,7 @@ public class CheckOutActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
 
                     builder.setTitle("WARNING");
-                    builder.setMessage("You are not allowed to remove single product in a transaction" + ModGlobal.itemDetailsModelList.get(position).getMenuName() + "?");
+                    builder.setMessage("You are not allowed to remove single product in a transaction");
 
 
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -265,8 +265,9 @@ public class CheckOutActivity extends AppCompatActivity {
             public void onClick(View view, int position) {
                 try {
                     TableModel table = ModGlobal.tableModelList.get(position);
-                    if (table.getStatus().equals("Occupied"))
-                        Toast.makeText(getApplicationContext(), table.getName() + " is not available", Toast.LENGTH_SHORT).show();
+                    if (table.getStatus().equals("Occupied") || table.getStatus().equals("Unavailable") ||
+                            table.getStatus().equals("Reserved"))
+                        Toast.makeText(getApplicationContext(), table.getName() + " is " + table.getStatus(), Toast.LENGTH_SHORT).show();
                     else {
                         if (table.getStatus().equals("Available")) {
                             table.setStatus("Selected");
@@ -322,6 +323,7 @@ public class CheckOutActivity extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
             startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
             finish();
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
 
         return super.onOptionsItemSelected(item);
@@ -332,6 +334,7 @@ public class CheckOutActivity extends AppCompatActivity {
         stopService(new Intent(CheckOutActivity.this, MyService.class));
         startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
         finish();
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
     }
 
@@ -354,7 +357,7 @@ public class CheckOutActivity extends AppCompatActivity {
             Glide.with(CheckOutActivity.this).load(ModGlobal.baseURL + "uploads/packages/" + menuModel.getImg()).into(imageView);
 
         title.setText(menuModel.getName());
-        price.setText(menuModel.getPrice());
+        price.setText("Php " + menuModel.getPrice());
         description.setText(menuModel.getDescr());
 
 
@@ -437,8 +440,8 @@ public class CheckOutActivity extends AppCompatActivity {
 
         dialog.show();
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.width = ModGlobal.width;
-        lp.height = ModGlobal.height;
+        lp.width = (int)this.getResources().getDimension(R.dimen.width);
+        lp.height = (int)this.getResources().getDimension(R.dimen.height);
 
         dialog.getWindow().setAttributes(lp);
         //dialog.getWindow().setLayout(800, 400);

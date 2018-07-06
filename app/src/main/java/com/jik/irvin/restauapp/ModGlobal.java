@@ -12,6 +12,7 @@ public class ModGlobal {
     public static List<ItemDetailsModel> itemDetailsModelList = new ArrayList<>();
     public static List<TableModel> tableModelList = new ArrayList<>();
     public static List<TransactionModel> transactionModelList = new ArrayList<>();
+    public static List<CompanyConfigModel> companyConfigModels = new ArrayList<>();
 
     public static String transactionId = "";
     public static String transType = "NORMAL";
@@ -19,6 +20,20 @@ public class ModGlobal {
 
     public static ArrayList<Integer> tableId = new ArrayList<>();
 
-    public static int width = 800 , height = 500;
+
+    public static String getLessPrice(int prod_id){
+
+        String less = "";
+
+        for (MenuModel menuModel : menuModelList){
+
+                if (menuModel.getProd_id() == prod_id){
+                    less = menuModel.getLessPrice();
+                }
+
+        }
+
+        return  less;
+    }
 
 }

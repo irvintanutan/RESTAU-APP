@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:elevation="@dimen/_3sdp"
             app:cardBackgroundColor="#9C27B0"
-            app:cardCornerRadius="10dp">
+            app:cardCornerRadius="@dimen/card_album_radius">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -43,6 +43,7 @@
                     android:layout_margin="@dimen/_7sdp"
                     android:text="VIEW TRANSACTION LIST"
                     android:textColor="#FFFFFF"
+                    android:textSize="@dimen/_7ssp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -56,7 +57,7 @@
             android:layout_marginLeft="10dp"
             android:elevation="@dimen/_3sdp"
             app:cardBackgroundColor="#E91E63"
-            app:cardCornerRadius="10dp">
+            app:cardCornerRadius="@dimen/card_album_radius">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -75,6 +76,7 @@
                     android:layout_gravity="center_horizontal|center_vertical"
                     android:layout_margin="@dimen/_7sdp"
                     android:text="VIEW ORDERS LIST"
+                    android:textSize="@dimen/_7ssp"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold" />
             </LinearLayout>

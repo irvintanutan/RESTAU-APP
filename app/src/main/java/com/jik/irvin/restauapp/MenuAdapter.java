@@ -26,7 +26,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MyViewHolder> 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
-        TextView title, price;
+        TextView title, price, discount;
         CardView cardView;
 
         public MyViewHolder(View view) {
@@ -35,6 +35,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MyViewHolder> 
             title = view.findViewById(R.id.title);
             price = view.findViewById(R.id.price);
             cardView = view.findViewById(R.id.card_view);
+            discount = view.findViewById(R.id.discount);
         }
     }
 
@@ -55,14 +56,21 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MyViewHolder> 
     public void onBindViewHolder(final MenuAdapter.MyViewHolder holder, int position) {
 
 
-        DecimalFormat dec=new DecimalFormat("#,##0.00");
+        DecimalFormat dec = new DecimalFormat("#,##0.00");
 
         holder.title.setText(menuModels.get(position).getName());
         holder.price.setText("₱" + dec.format(Double.parseDouble(menuModels.get(position).getPrice())));
+
+        if (menuModels.get(position).isDiscounted())
+            holder.discount.setText("(-" + menuModels.get(position).getLessPrice() + ")");
+        else
+            holder.discount.setText(null);
+
+
         if (!menuModels.get(position).getCat_id().equals("200")) {
-          Glide.with(mContext).load(ModGlobal.baseURL + "uploads/products/" + menuModels.get(position).getImg()).into(holder.imageView);
-        }else
-          Glide.with(mContext).load(ModGlobal.baseURL + "uploads/packages/" + menuModels.get(position).getImg()).into(holder.imageView);
+            Glide.with(mContext).load(ModGlobal.baseURL + "uploads/products/" + menuModels.get(position).getImg()).into(holder.imageView);
+        } else
+            Glide.with(mContext).load(ModGlobal.baseURL + "uploads/packages/" + menuModels.get(position).getImg()).into(holder.imageView);
 
 
     }

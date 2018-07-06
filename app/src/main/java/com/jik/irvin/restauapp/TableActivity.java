@@ -6,14 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -25,7 +23,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -34,7 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +44,7 @@ public class TableActivity extends AppCompatActivity {
     private boolean isExist = false;
     private int itemDetailsIndex = 0, itemDetailsQty = 1;
     private CardView proceed, transactionList;
+    private ImageView logo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +70,7 @@ public class TableActivity extends AppCompatActivity {
 
         proceed = findViewById(R.id.button_proceed);
         transactionList = findViewById(R.id.view_transaction);
+        logo = findViewById(R.id.logo);
 
         recyclerViewCategory = findViewById(R.id.recycler_view_table);
         recyclerViewMenu = findViewById(R.id.recycler_view_menu);
@@ -88,7 +86,7 @@ public class TableActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (ModGlobal.itemDetailsModelList.isEmpty()){
+                if (ModGlobal.itemDetailsModelList.isEmpty()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(TableActivity.this);
 
                     builder.setTitle("Warning");
@@ -105,9 +103,10 @@ public class TableActivity extends AppCompatActivity {
 
                     AlertDialog alert = builder.create();
                     alert.show();
-                }else {
+                } else {
                     startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
                     finish();
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 }
             }
         });
@@ -169,6 +168,9 @@ public class TableActivity extends AppCompatActivity {
         }));
 
 
+        Glide.with(TableActivity.this).load(ModGlobal.baseURL + "assets/img/" + ModGlobal.companyConfigModels.get(0).getImg_comp()).into(logo);
+
+
         filter("200");
     }
 
@@ -191,7 +193,7 @@ public class TableActivity extends AppCompatActivity {
             Glide.with(TableActivity.this).load(ModGlobal.baseURL + "uploads/packages/" + menuModel.getImg()).into(imageView);
 
         title.setText(menuModel.getName());
-        price.setText(menuModel.getPrice());
+        price.setText("Php " + menuModel.getPrice());
         description.setText(menuModel.getDescr());
 
 
@@ -271,8 +273,8 @@ public class TableActivity extends AppCompatActivity {
 
         dialog.show();
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.width = ModGlobal.width;
-        lp.height = ModGlobal.height;
+        lp.width = (int)this.getResources().getDimension(R.dimen.width);
+        lp.height = (int)this.getResources().getDimension(R.dimen.height);
 
         dialog.getWindow().setAttributes(lp);
         //dialog.getWindow().setLayout(800, 400);
@@ -314,7 +316,7 @@ public class TableActivity extends AppCompatActivity {
                 // Do nothing
                 startActivity(new Intent(TableActivity.this, MainActivity.class));
                 finish();
-
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
             }
 
@@ -329,7 +331,6 @@ public class TableActivity extends AppCompatActivity {
 
         AlertDialog alert = builder.create();
         alert.show();
-
     }
 
     @Override
@@ -353,7 +354,7 @@ public class TableActivity extends AppCompatActivity {
                     // Do nothing
                     startActivity(new Intent(TableActivity.this, MainActivity.class));
                     finish();
-
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
                 }
 
@@ -494,8 +495,8 @@ public class TableActivity extends AppCompatActivity {
 
         dialog.show();
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.width = ModGlobal.width - 350;
-        lp.height = ModGlobal.height;
+        lp.width = (int)this.getResources().getDimension(R.dimen.width_transaction);
+        lp.height = (int)this.getResources().getDimension(R.dimen.height);
 
         dialog.getWindow().setAttributes(lp);
 
@@ -524,6 +525,9 @@ public class TableActivity extends AppCompatActivity {
             progressDialog.setMessage("Fetching Transaction details");
             progressDialog.setCancelable(false);
             progressDialog.show();
+
+
+
         }
 
 
