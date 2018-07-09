@@ -8,8 +8,8 @@
     <dimen name="detail_backdrop_height">250dp</dimen>
     <dimen name="backdrop_title">30dp</dimen>
     <dimen name="backdrop_subtitle">18dp</dimen>
-    <dimen name="card_margin">@dimen/_4sdp</dimen>
-    <dimen name="card_album_radius">@dimen/_3sdp</dimen>
+    <dimen name="card_margin">@dimen/_2sdp</dimen>
+    <dimen name="card_album_radius">@dimen/_2sdp</dimen>
     <dimen name="album_cover_height">@dimen/_63sdp</dimen>
     <dimen name="album_title_padding">@dimen/_10sdp</dimen>
     <dimen name="album_title">15dp</dimen>
@@ -21,7 +21,5 @@
     <dimen name="width">@dimen/_325sdp</dimen>
     <dimen name="height">@dimen/_225sdp</dimen>
     <dimen name="width_transaction">@dimen/_250sdp</dimen>
-
-
     <integer name="navigationAnimTime">300</integer>
 </resources>

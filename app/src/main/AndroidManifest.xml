@@ -27,12 +27,15 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".CheckOutActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
 
         <service
             android:name=".MyService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".CashierActivity"
+            android:screenOrientation="landscape" ></activity>
     </application>
 
 </manifest>
