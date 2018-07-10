@@ -36,14 +36,46 @@
                 android:layout_margin="@dimen/_3sdp"
                 android:textSize="@dimen/songs_count" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/title"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="asdasdasd"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_3sdp"
+                    android:layout_marginBottom="@dimen/_3sdp"
+                    android:textSize="@dimen/songs_count" />
+
+
+                <TextView
+                    android:id="@+id/discount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#D50000"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:textStyle="bold"
+                    android:gravity="end"
+                    android:text="asdasd"
+                    android:textSize="@dimen/songs_count" />
+
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/bestSeller"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_alignBottom="@id/thumbnail"
                 android:layout_alignRight="@id/thumbnail"
                 android:src="@drawable/bestseller"
+                android:visibility="gone"
                 android:scaleType="fitXY" />
 
 

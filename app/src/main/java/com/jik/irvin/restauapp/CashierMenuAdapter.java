@@ -25,7 +25,7 @@ public class CashierMenuAdapter extends RecyclerView.Adapter<CashierMenuAdapter.
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imageView;
+        ImageView imageView , bestSeller;
         TextView title, price, discount;
         CardView cardView;
 
@@ -33,6 +33,9 @@ public class CashierMenuAdapter extends RecyclerView.Adapter<CashierMenuAdapter.
             super(view);
             imageView = view.findViewById(R.id.thumbnail);
             title = view.findViewById(R.id.title);
+            discount = view.findViewById(R.id.discount);
+            price = view.findViewById(R.id.price);
+            bestSeller = view.findViewById(R.id.bestSeller);
         }
     }
 
@@ -44,7 +47,7 @@ public class CashierMenuAdapter extends RecyclerView.Adapter<CashierMenuAdapter.
     @Override
     public CashierMenuAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.menu_list_cashier, parent, false);
+                .inflate(R.layout.menu_list, parent, false);
 
         return new CashierMenuAdapter.MyViewHolder(itemView);
     }
@@ -52,10 +55,30 @@ public class CashierMenuAdapter extends RecyclerView.Adapter<CashierMenuAdapter.
     @Override
     public void onBindViewHolder(final CashierMenuAdapter.MyViewHolder holder, int position) {
 
+        if(menuModels.get(position).isBestSelling()){
+            holder.bestSeller.setVisibility(View.VISIBLE);
+        }else
+            holder.bestSeller.setVisibility(View.GONE);
+
         if (menuModels.get(position).getName().length() > 13)
             holder.title.setText(menuModels.get(position).getName().substring(0 , 13));
         else
             holder.title.setText(menuModels.get(position).getName());
+
+
+        DecimalFormat dec = new DecimalFormat("#,##0.00");
+
+        holder.title.setText(menuModels.get(position).getName());
+        holder.price.setText("₱" + dec.format(Double.parseDouble(menuModels.get(position).getPrice())));
+
+
+
+
+        if (menuModels.get(position).isDiscounted())
+            holder.discount.setText("(-" + menuModels.get(position).getLessPrice() + ")");
+        else
+            holder.discount.setText(null);
+
 
         if (!menuModels.get(position).getCat_id().equals("200")) {
             Glide.with(mContext).load(ModGlobal.baseURL + "uploads/products/" + menuModels.get(position).getImg()).into(holder.imageView);

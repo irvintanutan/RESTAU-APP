@@ -105,12 +105,11 @@ public class CashierActivity extends AppCompatActivity {
                     isExist = true;
 
 
-                    ModGlobal.itemDetailsModelList.set(itemDetailsIndex, new ItemDetailsModel(itemDetailsModel.getProdID(),
+                    ModGlobal.itemDetailsModelList.set(position, new ItemDetailsModel(itemDetailsModel.getProdID(),
                             itemDetailsModel.getMenuPrice(), itemDetailsQty,
                             itemDetailsModel.getUrl(), itemDetailsModel.getMenuName(), itemDetailsModel.getCatID(), itemDetailsModel.getPosition(), itemDetailsModel.getShortName()));
 
                     lineItemAdapter.notifyDataSetChanged();
-                    recyclerViewLineItem.smoothScrollToPosition(lineItemAdapter.getItemCount() - 1);
                     computeTotal();
                 }
             }
@@ -153,7 +152,7 @@ public class CashierActivity extends AppCompatActivity {
                             menuModel.getPrice(), itemDetailsQty,
                             menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition(), menuModel.getShortName()));
                     lineItemAdapter.notifyDataSetChanged();
-                    recyclerViewLineItem.smoothScrollToPosition(itemDetailsIndex);
+
                 } else {
 
                     ModGlobal.itemDetailsModelList.add(new ItemDetailsModel(menuModel.getProd_id(),

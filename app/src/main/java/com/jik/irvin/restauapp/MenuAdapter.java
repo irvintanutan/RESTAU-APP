@@ -25,7 +25,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MyViewHolder> 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imageView;
+        ImageView imageView, bestSeller;
         TextView title, price, discount;
         CardView cardView;
 
@@ -36,6 +36,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MyViewHolder> 
             price = view.findViewById(R.id.price);
             cardView = view.findViewById(R.id.card_view);
             discount = view.findViewById(R.id.discount);
+            bestSeller = view.findViewById(R.id.bestSeller);
         }
     }
 
@@ -55,11 +56,18 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(final MenuAdapter.MyViewHolder holder, int position) {
 
+        if(menuModels.get(position).isBestSelling()){
+            holder.bestSeller.setVisibility(View.VISIBLE);
+        }else
+            holder.bestSeller.setVisibility(View.GONE);
 
         DecimalFormat dec = new DecimalFormat("#,##0.00");
 
         holder.title.setText(menuModels.get(position).getName());
         holder.price.setText("₱" + dec.format(Double.parseDouble(menuModels.get(position).getPrice())));
+
+
+
 
         if (menuModels.get(position).isDiscounted())
             holder.discount.setText("(-" + menuModels.get(position).getLessPrice() + ")");

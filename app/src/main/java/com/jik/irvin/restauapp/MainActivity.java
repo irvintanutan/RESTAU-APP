@@ -112,7 +112,10 @@ public class MainActivity extends AppCompatActivity {
                             c.getInt("item_count"),
                             i,
                             c.getString("less_price"),
-                            c.getBoolean("is_discounted"), c.getString("short_name")));
+                            c.getBoolean("is_discounted"),
+                            c.getString("short_name"),
+                            c.getBoolean("is_best_selling"),
+                            c.getString("rank")));
                 }
 
                 int counter = ModGlobal.menuModelList.size();
@@ -134,7 +137,10 @@ public class MainActivity extends AppCompatActivity {
                             c.getInt("prod_count"),
                             counter,
                             c.getString("less_price"),
-                            c.getBoolean("is_discounted"), c.getString("short_name")));
+                            c.getBoolean("is_discounted"),
+                            c.getString("short_name"),
+                            c.getBoolean("is_best_selling"),
+                            c.getString("rank")));
                 }
 
 
@@ -198,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.dismiss();
             if (strFromDoInBg.equals("1")) {
                startActivity(new Intent(MainActivity.this, CashierActivity.class));
-               // startActivity(new Intent(MainActivity.this, TableActivity.class));
+               //startActivity(new Intent(MainActivity.this, TableActivity.class));
                 finish();
             }
 

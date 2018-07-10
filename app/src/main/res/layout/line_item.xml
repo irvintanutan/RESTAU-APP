@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/_2sdp"
-                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginLeft="@dimen/_2sdp"
                 android:layout_marginRight="@dimen/_3sdp"
                 android:text="x 2"
                 android:textColor="#FFAB00"
@@ -50,7 +50,7 @@
                 android:layout_marginRight="@dimen/_3sdp"
                 android:gravity="end"
                 android:text="Php2000.00"
-                android:textSize="@dimen/_9ssp"
+                android:textSize="@dimen/_8ssp"
                 android:textColor="#616161"
                 app:fontFamily="@font/francois_one" />
         </LinearLayout>

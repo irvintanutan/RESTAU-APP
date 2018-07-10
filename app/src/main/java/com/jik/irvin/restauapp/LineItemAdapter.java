@@ -58,7 +58,7 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.MyView
 
         DecimalFormat dec=new DecimalFormat("#,##0.00");
 
-        holder.quantity.setText(" X " + itemDetailsModels.get(position).getMenuQty());
+        holder.quantity.setText("X " + itemDetailsModels.get(position).getMenuQty());
         holder.total.setText("₱" + dec.format(Double.parseDouble(itemDetailsModels.get(position).getMenuPrice())*
                                  itemDetailsModels.get(position).getMenuQty()));
         holder.price.setText(itemDetailsModels.get(position).getMenuPrice());

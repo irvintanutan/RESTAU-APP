@@ -21,10 +21,12 @@ public class MenuModel {
     private String lessPrice;
     private boolean isDiscounted;
     private String shortName;
+    private boolean isBestSelling;
+    private String rank;
 
 
     public MenuModel(int prod_id, String name, String descr, String cat_id, String cat_name, String price,
-                     String sold, String encoded, String img, int item_count, int position, String lessPrice, boolean isDiscounted, String shortName) {
+                     String sold, String encoded, String img, int item_count, int position, String lessPrice, boolean isDiscounted, String shortName, boolean isBestSelling, String rank) {
         this.prod_id = prod_id;
         this.name = name;
         this.descr = descr;
@@ -39,6 +41,8 @@ public class MenuModel {
         this.lessPrice = lessPrice;
         this.isDiscounted = isDiscounted;
         this.shortName = shortName;
+        this.isBestSelling = isBestSelling;
+        this.rank = rank;
     }
 
     public int getProd_id() {
@@ -154,6 +158,21 @@ public class MenuModel {
     }
 
 
+    public boolean isBestSelling() {
+        return isBestSelling;
+    }
+
+    public void setBestSelling(boolean bestSelling) {
+        isBestSelling = bestSelling;
+    }
+
+    public String getRank() {
+        return rank;
+    }
+
+    public void setRank(String rank) {
+        this.rank = rank;
+    }
 
 
 }
