@@ -254,13 +254,13 @@ public class TableActivity extends AppCompatActivity {
 
                     ModGlobal.itemDetailsModelList.set(itemDetailsIndex, new ItemDetailsModel(menuModel.getProd_id(),
                             menuModel.getPrice(), Integer.parseInt(quantity.getText().toString()),
-                            menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition()));
+                            menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition(), menuModel.getShortName()));
 
                 } else {
 
                     ModGlobal.itemDetailsModelList.add(new ItemDetailsModel(menuModel.getProd_id(),
                             menuModel.getPrice(), Integer.parseInt(quantity.getText().toString()),
-                            menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition()));
+                            menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition(), menuModel.getShortName()));
 
                 }
 
@@ -555,9 +555,9 @@ public class TableActivity extends AppCompatActivity {
                             c.getString("img"),
                             c.getString("name"),
                             c.getString("cat_id"),
-                            getPosition(c.getInt("prod_id"))
+                            getPosition(c.getInt("prod_id")),
 
-                    ));
+                            c.getString("short_name")));
                 }
 
                 JSONArray trxDetailsPackages = menuItems.getJSONArray("packages");
@@ -572,9 +572,9 @@ public class TableActivity extends AppCompatActivity {
                             c.getString("img"),
                             c.getString("name"),
                             "200",
-                            getPosition(c.getInt("pack_id") + 1000)
+                            getPosition(c.getInt("pack_id") + 1000),
 
-                    ));
+                            c.getString("short_name")));
                 }
 
 

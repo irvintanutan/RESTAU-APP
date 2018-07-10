@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
-    android:layout_width="@dimen/_90sdp"
+    android:layout_width="@dimen/_70sdp"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="@dimen/_3sdp"
+    app:cardCornerRadius="@dimen/_2sdp"
     android:layout_margin="@dimen/_1sdp"
     android:padding="@dimen/_10sdp"
     android:id="@+id/cv"

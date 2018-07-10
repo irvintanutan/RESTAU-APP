@@ -9,9 +9,10 @@ public class ItemDetailsModel {
     private String catID;
     private String url;
     private int position;
+    private String shortName;
 
 
-    public ItemDetailsModel(int menuID, String menuPrice, int menuQty, String url, String menuName, String catID, int position) {
+    public ItemDetailsModel(int menuID, String menuPrice, int menuQty, String url, String menuName, String catID, int position, String shortName) {
         this.prodID = menuID;
         this.menuPrice = menuPrice;
         this.menuQty = menuQty;
@@ -20,6 +21,7 @@ public class ItemDetailsModel {
         this.catID = catID;
         this.position = position;
 
+        this.shortName = shortName;
     }
 
     public int getProdID() {
@@ -77,4 +79,13 @@ public class ItemDetailsModel {
     public void setPosition(int position) {
         this.position = position;
     }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
 }

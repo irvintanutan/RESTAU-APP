@@ -9,6 +9,13 @@
     tools:context="com.jik.irvin.restauapp.CashierActivity">
 
 
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/cashier_bar"
+
+        />
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -32,6 +39,14 @@
                 android:padding="@dimen/_10sdp"
                 app:cardCornerRadius="0dp">
 
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view_line_item"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:scrollbars="none" />
+
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
@@ -40,7 +55,19 @@
                 android:layout_marginRight="@dimen/_3sdp"
                 android:layout_weight="2"
                 android:padding="@dimen/_10sdp"
+                app:cardBackgroundColor="#8BC34A"
                 app:cardCornerRadius="0dp">
+
+                <TextView
+                    android:id="@+id/totalPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="asdasdasd"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/_8ssp"
+                    app:fontFamily="@font/titillium_web_semibold" />
 
             </android.support.v7.widget.CardView>
         </LinearLayout>
@@ -55,25 +82,7 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="2"
-                android:padding="@dimen/_1sdp"
-                app:cardCornerRadius="0dp">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycler_view_category"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:orientation="horizontal"
-                    android:scrollbars="none" />
-
-            </android.support.v7.widget.CardView>
-
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginRight="@dimen/_3sdp"
+                android:layout_marginRight="@dimen/_1sdp"
                 android:layout_weight="12"
                 android:padding="@dimen/_10sdp"
                 app:cardCornerRadius="0dp">
@@ -87,6 +96,24 @@
 
             </android.support.v7.widget.CardView>
 
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:padding="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_1sdp"
+                android:layout_marginTop="@dimen/_3sdp"
+                app:cardCornerRadius="0dp">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false"
+                    android:scrollbars="none" />
+
+            </android.support.v7.widget.CardView>
 
         </LinearLayout>
 

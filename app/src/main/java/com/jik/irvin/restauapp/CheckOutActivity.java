@@ -34,7 +34,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.HashMap;
 import java.util.List;
 
 public class CheckOutActivity extends AppCompatActivity {
@@ -418,13 +417,13 @@ public class CheckOutActivity extends AppCompatActivity {
 
                     ModGlobal.itemDetailsModelList.set(itemDetailsIndex, new ItemDetailsModel(menuModel.getProd_id(),
                             menuModel.getPrice(), Integer.parseInt(quantity.getText().toString()),
-                            menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition()));
+                            menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition(), menuModel.getShortName()));
 
                 } else {
 
                     ModGlobal.itemDetailsModelList.add(new ItemDetailsModel(menuModel.getProd_id(),
                             menuModel.getPrice(), Integer.parseInt(quantity.getText().toString()),
-                            menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition()));
+                            menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition(), menuModel.getShortName()));
 
                 }
 
