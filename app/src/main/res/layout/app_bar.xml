@@ -71,6 +71,7 @@
                     android:src="@drawable/round_shopping_cart_white_18dp" />
 
                 <TextView
+                    android:id="@+id/cartItems"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|center_vertical"

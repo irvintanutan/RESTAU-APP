@@ -39,7 +39,7 @@ import java.util.List;
 public class CheckOutActivity extends AppCompatActivity {
 
     private CardView dineIn, cancel, takeOut;
-    private TextView totalPrice;
+    private TextView totalPrice , transactionId;
     private RecyclerView recyclerView;
     private RecyclerView recyclerViewTable;
     private ItemDetailsAdapter itemDetailsAdapter;
@@ -65,6 +65,7 @@ public class CheckOutActivity extends AppCompatActivity {
         cancel = findViewById(R.id.cancel);
         takeOut = findViewById(R.id.takeOut);
         totalPrice = findViewById(R.id.totalPrice);
+        transactionId = findViewById(R.id.transactionId);
         recyclerViewTable = findViewById(R.id.recycler_view_table_list);
 
         Toolbar tb = findViewById(R.id.app_bar2);
@@ -127,6 +128,7 @@ public class CheckOutActivity extends AppCompatActivity {
                         // Do nothing
                         ModGlobal.itemDetailsModelList.clear();
                         ModGlobal.tableId.clear();
+                        ModGlobal.transactionId = "";
                         ModGlobal.transType = "NORMAL";
 
                         startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
@@ -294,6 +296,11 @@ public class CheckOutActivity extends AppCompatActivity {
 
         computeTotal();
 
+        if (ModGlobal.transactionId.isEmpty()){
+            transactionId.setText("TRANSACTION # : NEW");
+        }else {
+            transactionId.setText("TRANSACTION # : " + ModGlobal.transactionId);
+        }
 
         startService(new Intent(this, MyService.class));
     }
@@ -660,6 +667,7 @@ public class CheckOutActivity extends AppCompatActivity {
 
             if (!warning) {
                 ModGlobal.itemDetailsModelList.clear();
+                ModGlobal.transactionId = "";
                 ModGlobal.tableId.clear();
                 //ModGlobal.clear();
                 updateTable("CHECKOUT");

@@ -174,7 +174,7 @@
                                 android:layout_height="match_parent"
                                 android:layout_margin="@dimen/_2sdp"
                                 android:textColor="@color/colorAccent"
-                                android:text="Cancel"
+                                android:text="Clear"
                                 android:textSize="@dimen/_15ssp"
                                 android:fontFamily="sans-serif-condensed"
                                 android:textStyle="bold" />

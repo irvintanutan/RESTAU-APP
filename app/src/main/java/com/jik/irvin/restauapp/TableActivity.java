@@ -44,6 +44,7 @@ public class TableActivity extends AppCompatActivity {
     private boolean isExist = false;
     private int itemDetailsIndex = 0, itemDetailsQty = 1;
     private CardView proceed, transactionList;
+    private TextView cartItems;
     private ImageView logo;
 
     @Override
@@ -71,6 +72,7 @@ public class TableActivity extends AppCompatActivity {
         proceed = findViewById(R.id.button_proceed);
         transactionList = findViewById(R.id.view_transaction);
         logo = findViewById(R.id.logo);
+        cartItems = findViewById(R.id.cartItems);
 
         recyclerViewCategory = findViewById(R.id.recycler_view_table);
         recyclerViewMenu = findViewById(R.id.recycler_view_menu);
@@ -116,7 +118,29 @@ public class TableActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                new SyncTransaction(TableActivity.this).execute("");
+                if (!ModGlobal.itemDetailsModelList.isEmpty()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(TableActivity.this);
+
+                    builder.setTitle("Warning");
+                    builder.setMessage("You cannot view previous transactions if there is a pending transaction currently. " +
+                            "Please cancel or complete the transaction first before doing this operation");
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
+                            finish();
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        }
+
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                } else
+                    new SyncTransaction(TableActivity.this).execute("");
 
             }
         });
@@ -172,6 +196,12 @@ public class TableActivity extends AppCompatActivity {
 
 
         filter("200");
+        countItems();
+    }
+
+
+    void countItems() {
+        cartItems.setText("VIEW ORDERS LIST (" + ModGlobal.itemDetailsModelList.size() + ")");
     }
 
 
@@ -264,6 +294,8 @@ public class TableActivity extends AppCompatActivity {
 
                 }
 
+                countItems();
+
 
             }
 
@@ -273,8 +305,8 @@ public class TableActivity extends AppCompatActivity {
 
         dialog.show();
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.width = (int)this.getResources().getDimension(R.dimen.width);
-        lp.height = (int)this.getResources().getDimension(R.dimen.height);
+        lp.width = (int) this.getResources().getDimension(R.dimen.width);
+        lp.height = (int) this.getResources().getDimension(R.dimen.height);
 
         dialog.getWindow().setAttributes(lp);
         //dialog.getWindow().setLayout(800, 400);
@@ -461,7 +493,6 @@ public class TableActivity extends AppCompatActivity {
                 Log.e("asd", ModGlobal.transactionModelList.toArray().toString());
 
                 TransactionModel transactionModel = ModGlobal.transactionModelList.get(position);
-                ModGlobal.transType = "UPDATE";
                 ModGlobal.transactionId = transactionModel.getTransId();
                 new SyncTransactionDetails(TableActivity.this).execute(transactionModel.getTransId());
             }
@@ -495,8 +526,8 @@ public class TableActivity extends AppCompatActivity {
 
         dialog.show();
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.width = (int)this.getResources().getDimension(R.dimen.width_transaction);
-        lp.height = (int)this.getResources().getDimension(R.dimen.height);
+        lp.width = (int) this.getResources().getDimension(R.dimen.width_transaction);
+        lp.height = (int) this.getResources().getDimension(R.dimen.height);
 
         dialog.getWindow().setAttributes(lp);
 
@@ -527,7 +558,6 @@ public class TableActivity extends AppCompatActivity {
             progressDialog.show();
 
 
-
         }
 
 
@@ -556,7 +586,6 @@ public class TableActivity extends AppCompatActivity {
                             c.getString("name"),
                             c.getString("cat_id"),
                             getPosition(c.getInt("prod_id")),
-
                             c.getString("short_name")));
                 }
 
@@ -597,6 +626,7 @@ public class TableActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String strFromDoInBg) {
             progressDialog.dismiss();
+            ModGlobal.transType = "UPDATE";
             startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
             finish();
             Log.e("itemDetails", Integer.toString(ModGlobal.itemDetailsModelList.size()));
