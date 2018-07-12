@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".Activity.MainActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,18 +23,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TableActivity"
+            android:name=".Activity.TableActivity"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".CheckOutActivity"
+            android:name=".Activity.CheckOutActivity"
             android:screenOrientation="landscape" />
 
         <service
-            android:name=".MyService"
+            android:name=".Services.MyService"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".CashierActivity"
+        <activity android:name=".Activity.CashierActivity"
             android:screenOrientation="landscape" ></activity>
         <meta-data
             android:name="preloaded_fonts"

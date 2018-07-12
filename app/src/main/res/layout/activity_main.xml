@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.jik.irvin.restauapp.MainActivity">
+    tools:context="com.jik.irvin.restauapp.Activity.MainActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -77,7 +77,7 @@
         <android.support.v7.widget.CardView
             android:id="@+id/login"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_25sdp"
             android:elevation="@dimen/_3sdp"
             android:padding="@dimen/_20sdp"
             app:cardBackgroundColor="#F44336"

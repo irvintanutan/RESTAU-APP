@@ -1,4 +1,4 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.Model.ItemDetailsModel;
+import com.jik.irvin.restauapp.R;
 
 import java.text.DecimalFormat;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Model;
 
 /**
  * Created by john on 5/6/2017.

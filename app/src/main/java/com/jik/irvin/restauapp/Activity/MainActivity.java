@@ -1,4 +1,4 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -13,6 +13,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+
+import com.jik.irvin.restauapp.Model.CategoryModel;
+import com.jik.irvin.restauapp.Model.CompanyConfigModel;
+import com.jik.irvin.restauapp.DatabaseHelper;
+import com.jik.irvin.restauapp.Model.MenuModel;
+import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.R;
+import com.jik.irvin.restauapp.Model.TableModel;
+import com.jik.irvin.restauapp.Services.WebRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -203,8 +212,8 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute("");
             progressDialog.dismiss();
             if (strFromDoInBg.equals("1")) {
-               //startActivity(new Intent(MainActivity.this, CashierActivity.class));
-               startActivity(new Intent(MainActivity.this, TableActivity.class));
+               startActivity(new Intent(MainActivity.this, CashierActivity.class));
+               //startActivity(new Intent(MainActivity.this, TableActivity.class));
                 finish();
             }
 

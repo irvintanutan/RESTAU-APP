@@ -1,4 +1,4 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Model;
 
 public class CompanyConfigModel {
 

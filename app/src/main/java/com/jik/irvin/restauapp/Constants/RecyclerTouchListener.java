@@ -1,10 +1,12 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Constants;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.jik.irvin.restauapp.Constants.ClickListener;
 
 /**
  * Created by wise01 on 5/13/2017.

@@ -1,4 +1,4 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -27,6 +27,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.jik.irvin.restauapp.Constants.ClickListener;
+import com.jik.irvin.restauapp.DatabaseHelper;
+import com.jik.irvin.restauapp.Adapter.ItemDetailsAdapter;
+import com.jik.irvin.restauapp.Model.ItemDetailsModel;
+import com.jik.irvin.restauapp.Model.MenuModel;
+import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.Services.MyService;
+import com.jik.irvin.restauapp.R;
+import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
+import com.jik.irvin.restauapp.Adapter.TableAdapter;
+import com.jik.irvin.restauapp.Model.TableModel;
+import com.jik.irvin.restauapp.Services.WebRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -297,9 +309,9 @@ public class CheckOutActivity extends AppCompatActivity {
         computeTotal();
 
         if (ModGlobal.transactionId.isEmpty()){
-            transactionId.setText("TRANSACTION # : NEW");
+            transactionId.setText("transaction # : NEW");
         }else {
-            transactionId.setText("TRANSACTION # : " + ModGlobal.transactionId);
+            transactionId.setText("transaction # : " + ModGlobal.transactionId);
         }
 
         startService(new Intent(this, MyService.class));
@@ -470,7 +482,7 @@ public class CheckOutActivity extends AppCompatActivity {
         }
 
 
-        totalPrice.setText("Total price :    Php " + dec.format(total) + "   ");
+        totalPrice.setText("total price : Php " + dec.format(total));
 
     }
 

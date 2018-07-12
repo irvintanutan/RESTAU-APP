@@ -1,4 +1,12 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Constants;
+
+import com.jik.irvin.restauapp.Adapter.TableAdapter;
+import com.jik.irvin.restauapp.Model.CategoryModel;
+import com.jik.irvin.restauapp.Model.CompanyConfigModel;
+import com.jik.irvin.restauapp.Model.ItemDetailsModel;
+import com.jik.irvin.restauapp.Model.MenuModel;
+import com.jik.irvin.restauapp.Model.TableModel;
+import com.jik.irvin.restauapp.Model.TransactionModel;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Services;
 
 /**
  * Created by irvin on 8/4/16.

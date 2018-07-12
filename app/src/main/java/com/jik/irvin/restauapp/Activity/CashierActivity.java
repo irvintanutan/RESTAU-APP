@@ -1,23 +1,35 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import com.jik.irvin.restauapp.Adapter.CashierCategoryAdapter;
+import com.jik.irvin.restauapp.Adapter.CashierMenuAdapter;
+import com.jik.irvin.restauapp.Model.CategoryModel;
+import com.jik.irvin.restauapp.Constants.ClickListener;
+import com.jik.irvin.restauapp.Model.ItemDetailsModel;
+import com.jik.irvin.restauapp.Adapter.LineItemAdapter;
+import com.jik.irvin.restauapp.Model.MenuModel;
+import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.R;
+import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -28,10 +40,10 @@ public class CashierActivity extends AppCompatActivity {
     private RecyclerView recyclerViewMenu, recyclerViewCategory;
     private CashierMenuAdapter cashierMenuAdapter;
     private CashierCategoryAdapter cashierCategoryAdapter;
-
     private RecyclerView recyclerViewLineItem;
     private LineItemAdapter lineItemAdapter;
-    private TextView totalPrice;
+    private TextView totalPrice , cartItems;
+    private CardView payment;
 
     private int itemDetailsIndex = 0, itemDetailsQty = 1;
     boolean isExist = false;
@@ -50,14 +62,23 @@ public class CashierActivity extends AppCompatActivity {
         setSupportActionBar(tb);
         final ActionBar ab = getSupportActionBar();
         //ab.setHomeAsUpIndicator(R.drawable.ic_menu); // set a custom icon for the default home button
-        ab.setDisplayShowHomeEnabled(true); // show or hide the default home button
-        ab.setDisplayHomeAsUpEnabled(true);
-        //ab.setLogo(R.drawable.ic_timeline_white_24dp);
-        ab.setTitle("Hi Mr. Irvin Tanutan (CASHIER)");
+        //ab.setDisplayShowHomeEnabled(true); // show or hide the default home button
+        //ab.setDisplayHomeAsUpEnabled(true);
+        ab.setLogo(R.drawable.logo);
+        ab.setTitle("  Hi Mr. Irvin Tanutan (CASHIER)");
         ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
         ab.setDisplayShowTitleEnabled(true); // disable the default title element here (for centered title)
 
         totalPrice = findViewById(R.id.totalPrice);
+        cartItems = findViewById(R.id.cartItems);
+        payment = findViewById(R.id.payment);
+
+        payment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopUpPayment();
+            }
+        });
 
         recyclerViewCategory = findViewById(R.id.recycler_view_category);
         recyclerViewMenu = findViewById(R.id.recycler_view_menu);
@@ -166,6 +187,7 @@ public class CashierActivity extends AppCompatActivity {
 
 
                 computeTotal();
+                countItems();
             }
 
             @Override
@@ -178,6 +200,12 @@ public class CashierActivity extends AppCompatActivity {
 
         filter("100");
         computeTotal();
+        countItems();
+    }
+
+
+    void countItems() {
+        cartItems.setText("# of items " + ModGlobal.itemDetailsModelList.size());
     }
 
 
@@ -292,6 +320,41 @@ public class CashierActivity extends AppCompatActivity {
 
 
         totalPrice.setText("Charge\n₱ " + dec.format(total));
+
+
+    }
+
+
+    public void PopUpPayment() {
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.payment_view, null);
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        // this is set the view from XML inside AlertDialog
+        alert.setView(alertLayout);
+        // disallow cancel of AlertDialog on click of back button and outside touch
+
+
+        alert.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing but close the dialog
+                // Do nothing
+                dialog.dismiss();
+
+            }
+
+        });
+        AlertDialog dialog = alert.create();
+        dialog.setCancelable(false);
+
+        dialog.show();
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.width = (int) this.getResources().getDimension(R.dimen.width);
+        lp.height = (int) this.getResources().getDimension(R.dimen.height);
+
+        dialog.getWindow().setAttributes(lp);
+        //dialog.getWindow().setLayout(800, 400);
 
     }
 

@@ -1,4 +1,4 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -26,6 +26,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.jik.irvin.restauapp.Adapter.CategoryAdapter;
+import com.jik.irvin.restauapp.Model.CategoryModel;
+import com.jik.irvin.restauapp.Constants.ClickListener;
+import com.jik.irvin.restauapp.DatabaseHelper;
+import com.jik.irvin.restauapp.Model.ItemDetailsModel;
+import com.jik.irvin.restauapp.Adapter.MenuAdapter;
+import com.jik.irvin.restauapp.Model.MenuModel;
+import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.R;
+import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
+import com.jik.irvin.restauapp.Adapter.TransactionDataAdapter;
+import com.jik.irvin.restauapp.Model.TransactionModel;
+import com.jik.irvin.restauapp.Services.WebRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;

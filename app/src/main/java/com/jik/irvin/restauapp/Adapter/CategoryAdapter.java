@@ -1,4 +1,4 @@
-package com.jik.irvin.restauapp;
+package com.jik.irvin.restauapp.Adapter;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
@@ -8,13 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.jik.irvin.restauapp.Model.CategoryModel;
+import com.jik.irvin.restauapp.R;
+
 import java.util.List;
 
 /**
  * Created by john on 5/6/2017.
  */
 
-public class CashierCategoryAdapter extends RecyclerView.Adapter<CashierCategoryAdapter.MyViewHolder> {
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder> {
 
     private Context mContext;
     private List<CategoryModel> categoryModels;
@@ -33,7 +36,7 @@ public class CashierCategoryAdapter extends RecyclerView.Adapter<CashierCategory
         }
     }
 
-    public CashierCategoryAdapter(Context mContext, List<CategoryModel> categoryModels) {
+    public CategoryAdapter(Context mContext, List<CategoryModel> categoryModels) {
         this.mContext = mContext;
         this.categoryModels = categoryModels;
     }
@@ -41,7 +44,7 @@ public class CashierCategoryAdapter extends RecyclerView.Adapter<CashierCategory
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.cashier_category_list, parent, false);
+                .inflate(R.layout.category_list, parent, false);
 
         return new MyViewHolder(itemView);
     }
