@@ -19,6 +19,7 @@ import com.jik.irvin.restauapp.Model.CompanyConfigModel;
 import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.Model.PosModel;
 import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Model.TableModel;
 import com.jik.irvin.restauapp.Services.WebRequest;
@@ -194,6 +195,8 @@ public class MainActivity extends AppCompatActivity {
                             c.getString("img")
                     ));
                 }
+
+                databaseHelper.addPos(new PosModel("2" , "2000000"));
 
 
                 json = "1";

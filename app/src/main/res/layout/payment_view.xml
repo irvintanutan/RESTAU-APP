@@ -3,106 +3,163 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="@dimen/_10sdp"
-    android:weightSum="4">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:weightSum="3">
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/totalPrice"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/_3sdp"
-            android:layout_weight="1"
-            android:elevation="@dimen/_10sdp"
-            android:padding="@dimen/_10sdp"
-            app:cardCornerRadius="10dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:fontFamily="sans-serif-black"
-                android:gravity="center"
-                android:text="1"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/_25ssp" />
-
-
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/cash"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/_3sdp"
-            android:layout_weight="1"
-            android:elevation="@dimen/_10sdp"
-            android:padding="@dimen/_10sdp"
-            app:cardCornerRadius="10dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:fontFamily="sans-serif-black"
-                android:gravity="center"
-                android:text="t"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/_25ssp" />
-
-
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/change"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/_3sdp"
-            android:layout_weight="1"
-            android:elevation="@dimen/_10sdp"
-            android:padding="@dimen/_10sdp"
-            app:cardCornerRadius="10dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:fontFamily="sans-serif-black"
-                android:gravity="center"
-                android:text="1"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/_25ssp" />
-
-
-        </android.support.v7.widget.CardView>
-
-    </LinearLayout>
+    android:padding="@dimen/_10sdp">
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
         android:weightSum="3">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_weight="2">
+            android:paddingLeft="@dimen/_5sdp"
+            android:weightSum="5">
+
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:weightSum="3">
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_1sdp"
+                    android:textSize="@dimen/_9sdp"
+                    android:text="Sub Total" />
+
+                <EditText
+                    android:id="@+id/subTotalValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/anton"
+                    android:hint="Sub Total"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:textSize="@dimen/_17ssp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_1sdp"
+                    android:textSize="@dimen/_9sdp"
+                    android:text="Discount" />
+
+                <EditText
+                    android:id="@+id/discountValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/anton"
+                    android:hint="Discount"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:textSize="@dimen/_17ssp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_1sdp"
+                    android:textSize="@dimen/_9sdp"
+                    android:text="Total" />
+
+                <EditText
+                    android:id="@+id/totalValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/anton"
+                    android:hint="Total"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:textSize="@dimen/_17ssp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_1sdp"
+                    android:textSize="@dimen/_9sdp"
+                    android:text="Cash" />
+
+                <EditText
+                    android:id="@+id/cashValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/anton"
+                    android:hint="Cash"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:textSize="@dimen/_17ssp" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_1sdp"
+                    android:textSize="@dimen/_9sdp"
+                    android:text="Change" />
+
+                <EditText
+                    android:id="@+id/changeValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/anton"
+                    android:hint="Change"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:textSize="@dimen/_17ssp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:weightSum="4">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
                 <android.support.v7.widget.CardView
                     android:id="@+id/pay1"
@@ -122,7 +179,7 @@
                         android:gravity="center"
                         android:text="1"
                         android:textColor="#FFFFFF"
-                        android:textSize="@dimen/_15ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
 
                 </android.support.v7.widget.CardView>
@@ -145,7 +202,7 @@
                         android:gravity="center"
                         android:text="5"
                         android:textColor="#FFFFFF"
-                        android:textSize="@dimen/_25ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
 
                 </android.support.v7.widget.CardView>
@@ -168,7 +225,7 @@
                         android:gravity="center"
                         android:text="10"
                         android:textColor="#FFFFFF"
-                        android:textSize="@dimen/_25ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
 
                 </android.support.v7.widget.CardView>
@@ -177,7 +234,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:weightSum="3">
 
@@ -199,7 +256,7 @@
                         android:gravity="center"
                         android:text="20"
                         android:textColor="#FFFFFF"
-                        android:textSize="@dimen/_25ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
 
                 </android.support.v7.widget.CardView>
@@ -222,7 +279,7 @@
                         android:gravity="center"
                         android:text="50"
                         android:textColor="#FFFFFF"
-                        android:textSize="@dimen/_25ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
 
                 </android.support.v7.widget.CardView>
@@ -245,7 +302,7 @@
                         android:gravity="center"
                         android:text="100"
                         android:textColor="#FFFFFF"
-                        android:textSize="@dimen/_25ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
 
                 </android.support.v7.widget.CardView>
@@ -255,7 +312,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:weightSum="3">
 
@@ -278,7 +335,7 @@
                         android:gravity="center"
                         android:text="200"
                         android:textColor="#FFFFFF"
-                        android:textSize="@dimen/_25ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
 
                 </android.support.v7.widget.CardView>
@@ -301,7 +358,7 @@
                         android:gravity="center"
                         android:text="500"
                         android:textColor="#FFFFFF"
-                        android:textSize="@dimen/_25ssp" />
+                        android:textSize="@dimen/_10ssp" />
 
 
                 </android.support.v7.widget.CardView>
@@ -324,13 +381,93 @@
                         android:gravity="center"
                         android:text="1000"
                         android:textColor="#FFFFFF"
-                        android:textSize="@dimen/_25ssp" />
-
+                        android:textSize="@dimen/_10ssp" />
 
                 </android.support.v7.widget.CardView>
 
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:weightSum="3">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/clear"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/_3sdp"
+                    android:layout_weight="1"
+                    android:padding="@dimen/_10sdp"
+                    app:cardBackgroundColor="#FFC107"
+                    app:cardCornerRadius="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:text="CLEAR"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/_10ssp" />
+
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/discount"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/_3sdp"
+                    android:layout_weight="1"
+                    android:padding="@dimen/_10sdp"
+                    app:cardBackgroundColor="#009688"
+                    app:cardCornerRadius="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:text="DISCOUNT"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/_10ssp" />
+
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/checkout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/_3sdp"
+                    android:layout_weight="1"
+                    android:padding="@dimen/_10sdp"
+                    app:cardBackgroundColor="#8BC34A"
+                    app:cardCornerRadius="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:text="CHECKOUT"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/_10ssp" />
+
+
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
         </LinearLayout>
+
+
     </LinearLayout>
+
+
 </LinearLayout>
