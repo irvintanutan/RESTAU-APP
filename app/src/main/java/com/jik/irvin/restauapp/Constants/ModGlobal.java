@@ -1,5 +1,6 @@
 package com.jik.irvin.restauapp.Constants;
 
+import com.jik.irvin.restauapp.Adapter.CashieringTableAdapter;
 import com.jik.irvin.restauapp.Adapter.TableAdapter;
 import com.jik.irvin.restauapp.Model.CategoryModel;
 import com.jik.irvin.restauapp.Model.CompanyConfigModel;
@@ -25,6 +26,7 @@ public class ModGlobal {
     public static String transactionId = "";
     public static String transType = "NORMAL";
     public static TableAdapter tableAdapter;
+    public static CashieringTableAdapter cashieringTableAdapter;
 
     public static ArrayList<Integer> tableId = new ArrayList<>();
 

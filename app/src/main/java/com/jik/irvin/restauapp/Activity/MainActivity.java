@@ -215,8 +215,8 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute("");
             progressDialog.dismiss();
             if (strFromDoInBg.equals("1")) {
-               startActivity(new Intent(MainActivity.this, CashierActivity.class));
-               //startActivity(new Intent(MainActivity.this, TableActivity.class));
+               //startActivity(new Intent(MainActivity.this, CashierActivity.class));
+               startActivity(new Intent(MainActivity.this, TableActivity.class));
                 finish();
             }
 

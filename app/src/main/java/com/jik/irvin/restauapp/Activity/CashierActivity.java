@@ -25,9 +25,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jik.irvin.restauapp.Adapter.CashierCategoryAdapter;
 import com.jik.irvin.restauapp.Adapter.CashierMenuAdapter;
+import com.jik.irvin.restauapp.Adapter.CashieringTableAdapter;
+import com.jik.irvin.restauapp.Adapter.ItemDetailsAdapter;
+import com.jik.irvin.restauapp.Adapter.TableAdapter;
 import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.CategoryModel;
 import com.jik.irvin.restauapp.Constants.ClickListener;
@@ -35,6 +39,7 @@ import com.jik.irvin.restauapp.Model.ItemDetailsModel;
 import com.jik.irvin.restauapp.Adapter.LineItemAdapter;
 import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.Model.TableModel;
 import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
 import com.jik.irvin.restauapp.Services.WebRequest;
@@ -55,12 +60,15 @@ public class CashierActivity extends AppCompatActivity {
     private CashierCategoryAdapter cashierCategoryAdapter;
     private RecyclerView recyclerViewLineItem;
     private LineItemAdapter lineItemAdapter;
-    private TextView totalPrice, cartItems;
-    private CardView payment, cancelTransaction;
+    private TextView totalPrice, cartItems, tableNumber;
+    private CardView payment, cancelTransaction , cardTableNumber;
     DecimalFormat dec = new DecimalFormat("#,##0.00");
     private int itemDetailsIndex = 0, itemDetailsQty = 1;
     boolean isExist = false;
     private AlertDialog finalDialog = null;
+
+    private RecyclerView recyclerViewTable;
+    private TableAdapter tableAdapter;
 
     DatabaseHelper databaseHelper = new DatabaseHelper(this);
     boolean warning = false;
@@ -92,6 +100,16 @@ public class CashierActivity extends AppCompatActivity {
         cartItems = findViewById(R.id.cartItems);
         payment = findViewById(R.id.payment);
         cancelTransaction = findViewById(R.id.cancelTransaction);
+        tableNumber = findViewById(R.id.tableNumber);
+        cardTableNumber = findViewById(R.id.cardTableNumber);
+
+
+        cardTableNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopUpTable();
+            }
+        });
 
         payment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -388,6 +406,68 @@ public class CashierActivity extends AppCompatActivity {
         totalPrice.setText("Charge\n₱ " + dec.format(total));
 
 
+    }
+
+
+    public void PopUpTable(){
+
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.table_view, null);
+
+
+        final RecyclerView recyclerViewTable = alertLayout.findViewById(R.id.recycler_view_table_list);
+
+        RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(this, 5);
+        recyclerViewTable.setLayoutManager(mLayoutManager1);
+        recyclerViewTable.setItemAnimator(new DefaultItemAnimator());
+        ModGlobal.cashieringTableAdapter = new CashieringTableAdapter(this, ModGlobal.tableModelList);
+        recyclerViewTable.setAdapter(ModGlobal.cashieringTableAdapter);
+
+        recyclerViewTable.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerViewTable, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                try {
+                    TableModel table = ModGlobal.tableModelList.get(position);
+                            ModGlobal.tableId.clear();
+                            addTable(Integer.parseInt(table.getTableId()));
+                            tableNumber.setText(table.getName());
+                            finalDialog.dismiss();
+
+                } catch (Exception e) {
+                    Log.e("asd", "something went wrong");
+                }
+
+            }
+
+            @Override
+            public void onLongClick(View view, final int position) {
+
+
+            }
+        }));
+
+
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        // this is set the view from XML inside AlertDialog
+        alert.setView(alertLayout);
+        // disallow cancel of AlertDialog on click of back button and outside touch
+
+
+        finalDialog = alert.create();
+        finalDialog.setCancelable(false);
+
+        finalDialog.show();
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.width = (int) this.getResources().getDimension(R.dimen.width);
+        lp.height = (int) this.getResources().getDimension(R.dimen.height_payment);
+
+        finalDialog.getWindow().setAttributes(lp);
+        //dialog.getWindow().setLayout(800, 400);
+    }
+
+    void addTable(int id) {
+        ModGlobal.tableId.add(id);
     }
 
 
@@ -874,6 +954,7 @@ public class CashierActivity extends AppCompatActivity {
                         ModGlobal.tableId.clear();
                         ModGlobal.transactionId = "";
                         ModGlobal.transType = "NORMAL";
+                        tableNumber.setText("Table #");
                         finalSubTotal = 0.00;
                         finalTotal = 0.00;
                         finalCash = 0.00;
