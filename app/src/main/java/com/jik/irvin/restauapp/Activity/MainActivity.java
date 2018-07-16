@@ -5,23 +5,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
+import com.epson.epos2.printer.Printer;
+import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.CategoryModel;
 import com.jik.irvin.restauapp.Model.CompanyConfigModel;
-import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.MenuModel;
-import com.jik.irvin.restauapp.Constants.ModGlobal;
 import com.jik.irvin.restauapp.Model.PosModel;
-import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Model.TableModel;
+import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Services.WebRequest;
 
 import org.json.JSONArray;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     CardView login;
     EditText username, password;
     DatabaseHelper databaseHelper = new DatabaseHelper(this);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
 
         username.setText(ModGlobal.baseURL);
+        password.setText("USB:/dev/bus/usb/001/011");
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
                     databaseHelper.updateBaseUrl(username.getText().toString());
                 new SignInRequest(MainActivity.this).execute("");
@@ -215,11 +217,10 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute("");
             progressDialog.dismiss();
             if (strFromDoInBg.equals("1")) {
-               //startActivity(new Intent(MainActivity.this, CashierActivity.class));
-               startActivity(new Intent(MainActivity.this, TableActivity.class));
+               startActivity(new Intent(MainActivity.this, CashierActivity.class));
+               //startActivity(new Intent(MainActivity.this, TableActivity.class));
                 finish();
             }
-
         }
     }
 
@@ -255,4 +256,6 @@ public class MainActivity extends AppCompatActivity {
         alert.show();
 
     }
+
+
 }

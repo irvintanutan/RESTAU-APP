@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
@@ -27,6 +29,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.epson.epos2.Epos2Exception;
+import com.epson.epos2.printer.Printer;
+import com.epson.epos2.printer.PrinterStatusInfo;
+import com.epson.epos2.printer.ReceiveListener;
+import com.epson.eposprint.Print;
 import com.jik.irvin.restauapp.Adapter.CashierCategoryAdapter;
 import com.jik.irvin.restauapp.Adapter.CashierMenuAdapter;
 import com.jik.irvin.restauapp.Adapter.CashieringTableAdapter;
@@ -35,6 +42,7 @@ import com.jik.irvin.restauapp.Adapter.TableAdapter;
 import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.CategoryModel;
 import com.jik.irvin.restauapp.Constants.ClickListener;
+import com.jik.irvin.restauapp.Model.CompanyConfigModel;
 import com.jik.irvin.restauapp.Model.ItemDetailsModel;
 import com.jik.irvin.restauapp.Adapter.LineItemAdapter;
 import com.jik.irvin.restauapp.Model.MenuModel;
@@ -42,6 +50,8 @@ import com.jik.irvin.restauapp.Constants.ModGlobal;
 import com.jik.irvin.restauapp.Model.TableModel;
 import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
+import com.jik.irvin.restauapp.Services.DiscoveryActivity;
+import com.jik.irvin.restauapp.Services.ShowMsg;
 import com.jik.irvin.restauapp.Services.WebRequest;
 
 import org.json.JSONArray;
@@ -53,7 +63,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CashierActivity extends AppCompatActivity {
+public class CashierActivity extends AppCompatActivity implements ReceiveListener {
 
     private RecyclerView recyclerViewMenu, recyclerViewCategory;
     private CashierMenuAdapter cashierMenuAdapter;
@@ -74,6 +84,8 @@ public class CashierActivity extends AppCompatActivity {
     boolean warning = false;
 
     private double finalSubTotal = 0.00, finalTotal = 0.00, finalCash = 0.00, finalChange = 0.00;
+
+    private Printer mPrinter = null;
 
 
     @Override
@@ -115,8 +127,14 @@ public class CashierActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                runPrintReceiptSequence();
+
+/*
+
                 if (!ModGlobal.itemDetailsModelList.isEmpty())
                     PopUpPayment();
+*/
+
             }
         });
 
@@ -329,7 +347,9 @@ public class CashierActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.settings, menu);
         return true;
+
     }
 
     @Override
@@ -363,6 +383,9 @@ public class CashierActivity extends AppCompatActivity {
 
             AlertDialog alert = builder.create();
             alert.show();
+        }else if (item.getItemId() == R.id.action_sync){
+             Intent  intent = new Intent(this, DiscoveryActivity.class);
+             startActivityForResult(intent, 0);
         }
 
         return super.onOptionsItemSelected(item);
@@ -804,6 +827,39 @@ public class CashierActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, final int resultCode, final Intent data) {
+        if (data != null && resultCode == RESULT_OK) {
+            String target = data.getStringExtra(getString(R.string.title_target));
+            if (target != null) {
+               ModGlobal.printerSetup = target;
+            }
+        }
+    }
+
+    @Override
+    public void onPtrReceive(Printer printer, final int i, final PrinterStatusInfo status, String s) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public synchronized void run() {
+                ShowMsg.showResult(i, makeErrorMessage(status), CashierActivity.this);
+
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        disconnectPrinter();
+                    }
+                }).start();
+            }
+        });
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
 
     class Sync extends AsyncTask<String, String, String> {
 
@@ -1007,6 +1063,334 @@ public class CashierActivity extends AppCompatActivity {
                 ModGlobal.tableId.remove(a);
         }
     }
+
+
+
+    private boolean printReceipt(){
+        String method = "";
+        StringBuilder textData = new StringBuilder();
+
+/*
+
+        CompanyConfigModel c = ModGlobal.companyConfigModels.get(0);
+
+        String companyName = c.getName();
+        String companyAddress = c.getAddress();
+        String companyTin = c.getTin();
+
+
+*/
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        try {
+            method = "Print Company Information";
+
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            textData.append("Sample 1 feed line\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+            mPrinter.addFeedLine(1);
+
+
+            mPrinter.addTextFont(Printer.FONT_A);
+            textData.append("Sample FONT A\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextFont(Printer.FONT_B);
+            textData.append("Sample FONT B\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextFont(Printer.FONT_C);
+            textData.append("Sample FONT C\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextFont(Printer.FONT_D);
+            textData.append("Sample FONT D\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextFont(Printer.FONT_E);
+            textData.append("Sample FONT E\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addLineSpace(5);
+            textData.append("Sample Line Space 5\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addLineSpace(10);
+            textData.append("Sample Line Space 10\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addLineSpace(15);
+            textData.append("Sample Line Space 15\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextSize(1 , 1);
+            textData.append("Sample Text size 1\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+
+            mPrinter.addTextSize(2, 2);
+            textData.append("Sample Text size 2\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+
+            mPrinter.addTextSize(3 , 3);
+            textData.append("Sample Text size 3\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+
+            mPrinter.addCut(Printer.CUT_FEED);
+
+
+
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, method, CashierActivity.this);
+            return false;
+
+        }
+
+        return true;
+    }
+
+
+    private boolean runPrintReceiptSequence() {
+        if (!initializeObject()) {
+            return false;
+        }
+
+        if (!printReceipt()) {
+            finalizeObject();
+            return false;
+        }
+
+        if (!printData()) {
+            finalizeObject();
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+
+
+    private boolean printData() {
+        if (mPrinter == null) {
+            return false;
+        }
+
+        if (!connectPrinter()) {
+            return false;
+        }
+
+        PrinterStatusInfo status = mPrinter.getStatus();
+
+
+        if (!isPrintable(status)) {
+            ShowMsg.showMsg(makeErrorMessage(status), CashierActivity.this);
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Exception ex) {
+                // Do nothing
+            }
+            return false;
+        }
+
+        try {
+            mPrinter.sendData(Printer.PARAM_DEFAULT);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "sendData", CashierActivity.this);
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Exception ex) {
+                // Do nothing
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean initializeObject() {
+        try {
+            mPrinter = new Printer(Printer.TM_U220 , Printer.MODEL_SOUTHASIA , CashierActivity.this);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "Printer", CashierActivity.this);
+            return false;
+        }
+
+        mPrinter.setReceiveEventListener(this);
+
+        return true;
+    }
+
+    private void finalizeObject() {
+        if (mPrinter == null) {
+            return;
+        }
+
+        mPrinter.clearCommandBuffer();
+
+        mPrinter.setReceiveEventListener(null);
+
+        mPrinter = null;
+    }
+
+    private boolean connectPrinter() {
+        boolean isBeginTransaction = false;
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        try {
+            mPrinter.connect(ModGlobal.printerSetup, Printer.PARAM_DEFAULT);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "connect", CashierActivity.this);
+            return false;
+        }
+
+        try {
+            mPrinter.beginTransaction();
+            isBeginTransaction = true;
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "beginTransaction", CashierActivity.this);
+        }
+
+        if (isBeginTransaction == false) {
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Epos2Exception e) {
+                // Do nothing
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void disconnectPrinter() {
+        if (mPrinter == null) {
+            return;
+        }
+
+        try {
+            mPrinter.endTransaction();
+        }
+        catch (final Exception e) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public synchronized void run() {
+                    ShowMsg.showException(e, "endTransaction", CashierActivity.this);
+                }
+            });
+        }
+
+        try {
+            mPrinter.disconnect();
+        }
+        catch (final Exception e) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public synchronized void run() {
+                    ShowMsg.showException(e, "disconnect", CashierActivity.this);
+                }
+            });
+        }
+
+        finalizeObject();
+    }
+
+    private boolean isPrintable(PrinterStatusInfo status) {
+        if (status == null) {
+            return false;
+        }
+
+        if (status.getConnection() == Printer.FALSE) {
+            return false;
+        }
+        else if (status.getOnline() == Printer.FALSE) {
+            return false;
+        }
+        else {
+            ;//print available
+        }
+
+        return true;
+    }
+
+    private String makeErrorMessage(PrinterStatusInfo status) {
+        String msg = "";
+
+        if (status.getOnline() == Printer.FALSE) {
+            msg += getString(R.string.handlingmsg_err_offline);
+        }
+        if (status.getConnection() == Printer.FALSE) {
+            msg += getString(R.string.handlingmsg_err_no_response);
+        }
+        if (status.getCoverOpen() == Printer.TRUE) {
+            msg += getString(R.string.handlingmsg_err_cover_open);
+        }
+        if (status.getPaper() == Printer.PAPER_EMPTY) {
+            msg += getString(R.string.handlingmsg_err_receipt_end);
+        }
+        if (status.getPaperFeed() == Printer.TRUE || status.getPanelSwitch() == Printer.SWITCH_ON) {
+            msg += getString(R.string.handlingmsg_err_paper_feed);
+        }
+        if (status.getErrorStatus() == Printer.MECHANICAL_ERR || status.getErrorStatus() == Printer.AUTOCUTTER_ERR) {
+            msg += getString(R.string.handlingmsg_err_autocutter);
+            msg += getString(R.string.handlingmsg_err_need_recover);
+        }
+        if (status.getErrorStatus() == Printer.UNRECOVER_ERR) {
+            msg += getString(R.string.handlingmsg_err_unrecover);
+        }
+        if (status.getErrorStatus() == Printer.AUTORECOVER_ERR) {
+            if (status.getAutoRecoverError() == Printer.HEAD_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_head);
+            }
+            if (status.getAutoRecoverError() == Printer.MOTOR_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_motor);
+            }
+            if (status.getAutoRecoverError() == Printer.BATTERY_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_battery);
+            }
+            if (status.getAutoRecoverError() == Printer.WRONG_PAPER) {
+                msg += getString(R.string.handlingmsg_err_wrong_paper);
+            }
+        }
+        if (status.getBatteryLevel() == Printer.BATTERY_LEVEL_0) {
+            msg += getString(R.string.handlingmsg_err_battery_real_end);
+        }
+
+        return msg;
+    }
+
 
 
 }
