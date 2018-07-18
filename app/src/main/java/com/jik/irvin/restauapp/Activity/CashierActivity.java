@@ -1070,25 +1070,52 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         String method = "";
         StringBuilder textData = new StringBuilder();
 
-/*
 
         CompanyConfigModel c = ModGlobal.companyConfigModels.get(0);
 
-        String companyName = c.getName();
-        String companyAddress = c.getAddress();
-        String companyTin = c.getTin();
+        String companyName = wordwrap(c.getName() , 15);
+        String companyAddress = wordwrap(c.getAddress() , 25);
+        String companyTin = wordwrap(c.getTin(), 25);
 
-
-*/
 
         if (mPrinter == null) {
             return false;
         }
 
         try {
-            method = "Print Company Information";
-
             mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            method = "Print Company Information";
+            mPrinter.addTextSize(2, 1);
+            textData.append(companyName + "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextSize(1, 1);
+            textData.append(companyAddress + "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextSize(1, 1);
+            textData.append(companyTin + "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextSize(1, 1);
+            textData.append("******************************\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextSize(1, 1);
+            textData.append("TABLE #1\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextSize(1, 1);
+            textData.append("******************************\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+          /*  mPrinter.addTextAlign(Printer.ALIGN_CENTER);
             textData.append("Sample 1 feed line\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
@@ -1153,9 +1180,9 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             textData.delete(0, textData.length());
 
 
+         */
+
             mPrinter.addCut(Printer.CUT_FEED);
-
-
 
         }
         catch (Exception e) {
@@ -1391,6 +1418,28 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         return msg;
     }
 
+
+    public static String wordwrap(final String input, final int length) {
+        if (input == null || length < 1) {
+            throw new IllegalArgumentException("Invalid input args");
+        }
+
+        final String text = input.trim();
+
+        if (text.length() > length && text.contains(" ")) {
+            final String line = text.substring(0, length);
+            final int lineBreakIndex = line.indexOf("\n");
+            final int lineLastSpaceIndex = line.lastIndexOf(" ");
+            final int inputFirstSpaceIndex = text.indexOf(" ");
+
+            final int breakIndex = lineBreakIndex > -1 ? lineBreakIndex :
+                    (lineLastSpaceIndex > -1 ? lineLastSpaceIndex : inputFirstSpaceIndex);
+
+            return text.substring(0, breakIndex) + "\n" + wordwrap(text.substring(breakIndex + 1), length);
+        } else {
+            return text;
+        }
+    }
 
 
 }

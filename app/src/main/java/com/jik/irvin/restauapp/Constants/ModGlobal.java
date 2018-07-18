@@ -6,6 +6,7 @@ import com.jik.irvin.restauapp.Model.CategoryModel;
 import com.jik.irvin.restauapp.Model.CompanyConfigModel;
 import com.jik.irvin.restauapp.Model.ItemDetailsModel;
 import com.jik.irvin.restauapp.Model.MenuModel;
+import com.jik.irvin.restauapp.Model.PackageDetailsModel;
 import com.jik.irvin.restauapp.Model.TableModel;
 import com.jik.irvin.restauapp.Model.TransactionModel;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 public class ModGlobal {
 
-    public static String baseURL = "http://172.20.10.9/RESTAU-APP-BACKEND/resto-app/";
+    public static String baseURL = "http://192.168.88.24/~jik/RESTAU-APP-BACKEND/resto-app/";
     public static List<MenuModel> menuModelList = new ArrayList<>();
     public static List<MenuModel> menuModelListCopy = new ArrayList<>();
     public static List<CategoryModel> categoryModelList = new ArrayList<>();
@@ -22,6 +23,7 @@ public class ModGlobal {
     public static List<TableModel> tableModelList = new ArrayList<>();
     public static List<TransactionModel> transactionModelList = new ArrayList<>();
     public static List<CompanyConfigModel> companyConfigModels = new ArrayList<>();
+    public static List<PackageDetailsModel> packageDetailsModelList = new ArrayList<>();
 
     public static String transactionId = "";
     public static String transType = "NORMAL";

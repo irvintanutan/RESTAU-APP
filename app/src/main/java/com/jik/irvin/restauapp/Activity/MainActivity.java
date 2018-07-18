@@ -1,25 +1,29 @@
 package com.jik.irvin.restauapp.Activity;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
-import com.epson.epos2.printer.Printer;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
 import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.CategoryModel;
 import com.jik.irvin.restauapp.Model.CompanyConfigModel;
 import com.jik.irvin.restauapp.Model.MenuModel;
+import com.jik.irvin.restauapp.Model.PackageDetailsModel;
 import com.jik.irvin.restauapp.Model.PosModel;
 import com.jik.irvin.restauapp.Model.TableModel;
 import com.jik.irvin.restauapp.R;
@@ -34,8 +38,10 @@ public class MainActivity extends AppCompatActivity {
     CardView login;
     EditText username, password;
     DatabaseHelper databaseHelper = new DatabaseHelper(this);
+    long lastDown , lastDuration;
+    boolean isPressed = false;
 
-
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,11 +67,78 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                    databaseHelper.updateBaseUrl(username.getText().toString());
                 new SignInRequest(MainActivity.this).execute("");
 
             }
         });
+
+
+        login.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lastDown = System.currentTimeMillis();
+                    isPressed = true;
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    lastDuration = System.currentTimeMillis() - lastDown;
+                    isPressed = false;
+                }
+
+                if (((lastDuration / 1000) > 5) && !isPressed){
+
+
+
+                    LayoutInflater inflater = getLayoutInflater();
+                    View alertLayout = inflater.inflate(R.layout.app_register, null);
+                    final EditText password =  alertLayout.findViewById(R.id.et_password);
+
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                    alert.setIcon(MainActivity.this.getResources().getDrawable(R.drawable.ic_fingerprint_black_24dp));
+                    alert.setTitle("Enter Password");
+                    // this is set the view from XML inside AlertDialog
+                    alert.setView(alertLayout);
+                    // disallow cancel of AlertDialog on click of back button and outside touch
+                    alert.setCancelable(false);
+                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+
+                    alert.setPositiveButton("Register", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String pass = password.getText().toString();
+
+                            if (pass.equals("")) {
+                            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                            startActivity(intent);
+                            finish();
+                            } else
+                                dialog.dismiss();
+                        }
+                    });
+                    AlertDialog dialog = alert.create();
+                    dialog.show();
+                }else {
+                    new SignInRequest(MainActivity.this).execute("");
+                }
+
+                return true;
+            }
+        });
+
+        String androidId = Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+
+        databaseHelper.addPos(new PosModel("2", "2000000", androidId));
+
+
+
     }
 
 
@@ -97,11 +170,11 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
             String json = "0";
             try {
-                Log.e("url" , databaseHelper.getBaseUrl());
+                Log.e("url", databaseHelper.getBaseUrl());
 
                 JSONArray jsonArray = new JSONArray();
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("name" , "IRVIN");
+                jsonObject.put("name", "IRVIN");
                 jsonArray.put(jsonObject);
                 ModGlobal.companyConfigModels.clear();
 
@@ -134,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
 
                 JSONArray packages = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-packages-api", WebRequest.GET));
 
-                for (int i = 0; i < packages.length(); i++ , counter++) {
+                for (int i = 0; i < packages.length(); i++, counter++) {
                     JSONObject c = packages.getJSONObject(i);
                     ModGlobal.menuModelList.add(new MenuModel(
                             c.getInt("pack_id") + 1000,
@@ -153,13 +226,22 @@ public class MainActivity extends AppCompatActivity {
                             c.getString("short_name"),
                             c.getBoolean("is_best_selling"),
                             c.getString("rank")));
+
+                    JSONArray arr = c.getJSONArray("package_products");
+                    for (int x = 0; x < arr.length(); x++) {
+                        JSONObject b = arr.getJSONObject(x);
+
+                        ModGlobal.packageDetailsModelList.add(new PackageDetailsModel(b.getString("pack_prod_id"),
+                                b.getString("pack_prod_name"), b.getString("pack_prod_short_name"),
+                                b.getString("pack_prod_qty"), Integer.toString(c.getInt("pack_id") + 1000)));
+                    }
                 }
 
 
                 JSONArray categories = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-categories-api", WebRequest.GET));
 
-                ModGlobal.categoryModelList.add(new CategoryModel("100" , "ALL" , " " , " "));
-                ModGlobal.categoryModelList.add(new CategoryModel("200" , "PACKAGES" , " " , " "));
+                ModGlobal.categoryModelList.add(new CategoryModel("100", "ALL", " ", " "));
+                ModGlobal.categoryModelList.add(new CategoryModel("200", "PACKAGES", " ", " "));
                 for (int i = 0; i < categories.length(); i++) {
                     JSONObject c = categories.getJSONObject(i);
                     ModGlobal.categoryModelList.add(new CategoryModel(
@@ -198,9 +280,6 @@ public class MainActivity extends AppCompatActivity {
                     ));
                 }
 
-                databaseHelper.addPos(new PosModel("2" , "2000000"));
-
-
                 json = "1";
             } catch (JSONException e) {
                 progressDialog.dismiss();
@@ -217,8 +296,8 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute("");
             progressDialog.dismiss();
             if (strFromDoInBg.equals("1")) {
-               startActivity(new Intent(MainActivity.this, CashierActivity.class));
-               //startActivity(new Intent(MainActivity.this, TableActivity.class));
+                //startActivity(new Intent(MainActivity.this, CashierActivity.class));
+                startActivity(new Intent(MainActivity.this, TableActivity.class));
                 finish();
             }
         }
@@ -256,6 +335,5 @@ public class MainActivity extends AppCompatActivity {
         alert.show();
 
     }
-
 
 }

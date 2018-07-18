@@ -9,6 +9,9 @@ import android.util.Log;
 
 import com.jik.irvin.restauapp.Model.PosModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by irvin on 7/29/16.
  */
@@ -21,8 +24,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "restauapp";
 
 
-
-
     ///table name
     private static final String tbl_base = "tbl_base";
     ///columns...
@@ -32,10 +33,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String tbl_pos = "tbl_pos";
     ///columns...
     private static final String pos_id = "pos_id";
+    private static final String device_key = "device_key";
     private static final String last_receipt_number = "last_receipt_number";
-
-
-
 
 
     public DatabaseHelper(Context context) {
@@ -50,6 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_BASE_URL_TABLE);
 
         String CREATE_POS_TABLE = "CREATE TABLE " + tbl_pos + "( pos_id integer primary key , "
+                + device_key + " TEXT , "
                 + last_receipt_number + " TEXT );";
         db.execSQL(CREATE_POS_TABLE);
 
@@ -81,7 +81,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Inserting Row
         if (cursor.getCount() <= 0) {
 
-            values.put(pos_id , posModel.getPos_id());
+            values.put(pos_id, posModel.getPos_id());
+            values.put(device_key, posModel.getDevice_key());
             values.put(last_receipt_number, posModel.getLast_receipt_number());
             db.insert(tbl_pos, null, values);
         }
@@ -90,12 +91,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    public void updatePos(PosModel posModel) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(pos_id, posModel.getPos_id());
+        values.put(device_key, posModel.getDevice_key());
+        values.put(last_receipt_number, posModel.getLast_receipt_number());
+
+        db.update(tbl_pos, values, null, null);
+        db.close(); // Closing database connection
+
+    }
+
+    public List<PosModel> getAllSettings() {
+        List<PosModel> contentList = new ArrayList<PosModel>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + tbl_pos;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                PosModel contents = new PosModel();
+                contents.setPos_id(cursor.getString(0));
+                contents.setDevice_key(cursor.getString(1));
+                contents.setLast_receipt_number(cursor.getString(2));
+
+                contentList.add(contents);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        // return quote list
+        return contentList;
+    }
+
 
     public void updateLastReceiptNumber(String lrn) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-            values.put(last_receipt_number, lrn);
+        values.put(last_receipt_number, lrn);
         db.update(tbl_pos, values, "pos_id=1", null);
 
 
@@ -103,9 +142,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
-
-    public int getLastReceiptNumber(){
+    public int getLastReceiptNumber() {
         int result = 0;
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -114,7 +151,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         cursor.moveToFirst();
 
-        Log.e("asd" , Integer.toString(cursor.getCount()));
+        Log.e("asd", Integer.toString(cursor.getCount()));
 
         result = cursor.getInt(1) + 1;
 
@@ -143,7 +180,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    public boolean hasBaseUrl(){
+    public boolean hasBaseUrl() {
         boolean ind = false;
         String selectQuery = "SELECT  * FROM " + tbl_base;
         SQLiteDatabase db = this.getWritableDatabase();
