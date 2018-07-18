@@ -153,7 +153,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Log.e("asd", Integer.toString(cursor.getCount()));
 
-        result = cursor.getInt(1) + 1;
+        result = cursor.getInt(2) + 1;
 
         cursor.close();
         db.close();

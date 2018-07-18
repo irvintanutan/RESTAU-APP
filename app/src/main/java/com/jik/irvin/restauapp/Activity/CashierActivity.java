@@ -47,6 +47,7 @@ import com.jik.irvin.restauapp.Model.ItemDetailsModel;
 import com.jik.irvin.restauapp.Adapter.LineItemAdapter;
 import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.Model.PackageDetailsModel;
 import com.jik.irvin.restauapp.Model.TableModel;
 import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
@@ -71,7 +72,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
     private RecyclerView recyclerViewLineItem;
     private LineItemAdapter lineItemAdapter;
     private TextView totalPrice, cartItems, tableNumber;
-    private CardView payment, cancelTransaction , cardTableNumber;
+    private CardView payment, cancelTransaction, cardTableNumber;
     DecimalFormat dec = new DecimalFormat("#,##0.00");
     private int itemDetailsIndex = 0, itemDetailsQty = 1;
     boolean isExist = false;
@@ -106,7 +107,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         //ab.setDisplayHomeAsUpEnabled(true);
         ab.setLogo(R.drawable.logo);
         ab.setTitle("  " + ModGlobal.userModel.getFirstName() + " " + ModGlobal.userModel.getMiddleName() + " "
-                        + ModGlobal.userModel.getLastName() +  " (CASHIER)");
+                + ModGlobal.userModel.getLastName() + " (CASHIER)");
         ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
         ab.setDisplayShowTitleEnabled(true); // disable the default title element here (for centered title)
 
@@ -129,13 +130,9 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             @Override
             public void onClick(View view) {
 
-                runPrintReceiptSequence();
-
-/*
 
                 if (!ModGlobal.itemDetailsModelList.isEmpty())
                     PopUpPayment();
-*/
 
             }
         });
@@ -385,9 +382,9 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
             AlertDialog alert = builder.create();
             alert.show();
-        }else if (item.getItemId() == R.id.action_sync){
-             Intent  intent = new Intent(this, DiscoveryActivity.class);
-             startActivityForResult(intent, 0);
+        } else if (item.getItemId() == R.id.action_sync) {
+            Intent intent = new Intent(this, DiscoveryActivity.class);
+            startActivityForResult(intent, 0);
         }
 
         return super.onOptionsItemSelected(item);
@@ -434,7 +431,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
     }
 
 
-    public void PopUpTable(){
+    public void PopUpTable() {
 
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.table_view, null);
@@ -453,10 +450,10 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             public void onClick(View view, int position) {
                 try {
                     TableModel table = ModGlobal.tableModelList.get(position);
-                            ModGlobal.tableId.clear();
-                            addTable(Integer.parseInt(table.getTableId()));
-                            tableNumber.setText(table.getName());
-                            finalDialog.dismiss();
+                    ModGlobal.tableId.clear();
+                    addTable(Integer.parseInt(table.getTableId()));
+                    tableNumber.setText(table.getName());
+                    finalDialog.dismiss();
 
                 } catch (Exception e) {
                     Log.e("asd", "something went wrong");
@@ -470,7 +467,6 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
             }
         }));
-
 
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -834,7 +830,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         if (data != null && resultCode == RESULT_OK) {
             String target = data.getStringExtra(getString(R.string.title_target));
             if (target != null) {
-               ModGlobal.printerSetup = target;
+                ModGlobal.printerSetup = target;
             }
         }
     }
@@ -996,6 +992,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
             if (!warning) {
 
+                runPrintReceiptSequence();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);
 
@@ -1067,16 +1064,15 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
     }
 
 
-
-    private boolean printReceipt(){
+    private boolean printReceipt() {
         String method = "";
         StringBuilder textData = new StringBuilder();
 
 
         CompanyConfigModel c = ModGlobal.companyConfigModels.get(0);
 
-        String companyName = wordwrap(c.getName() , 15);
-        String companyAddress = wordwrap(c.getAddress() , 25);
+        String companyName = wordwrap(c.getName(), 15);
+        String companyAddress = wordwrap(c.getAddress(), 25);
         String companyTin = wordwrap(c.getTin(), 25);
 
 
@@ -1108,7 +1104,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             textData.delete(0, textData.length());
 
             mPrinter.addTextSize(1, 1);
-            textData.append("TABLE #1\n");
+            textData.append(tableNumber.getText().toString() + "\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
@@ -1116,6 +1112,95 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             textData.append("******************************\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
+
+            mPrinter.addTextAlign(Printer.ALIGN_LEFT);
+            textData.append("Receipt#: " + databaseHelper.getLastReceiptNumber() + "\n");
+            textData.append("Staff: " + ModGlobal.userModel.getUsername() + "\n");
+            textData.append("Cashier: " + ModGlobal.userModel.getUsername() + "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            textData.append("===================================\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
+            textData.append("Php\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextAlign(Printer.ALIGN_LEFT);
+
+            List<ItemDetailsModel> itemDetailsModels = ModGlobal.itemDetailsModelList;
+
+
+            for (ItemDetailsModel itemDetailsModel : itemDetailsModels) {
+
+                String textValue = "";
+                String totalValue = "";
+                String finalValue = "";
+                int length = 0;
+
+                if (itemDetailsModel.getCatID().equals("200")) {
+
+                    textValue += itemDetailsModel.getMenuQty() + " " + itemDetailsModel.getShortName()
+                            + " @" + itemDetailsModel.getMenuPrice();
+
+                    totalValue = dec.format(Double.parseDouble(itemDetailsModel.getMenuPrice()) *
+                            itemDetailsModel.getMenuQty());
+
+                    length = 35 - (textValue.length() + totalValue.length());
+
+                    finalValue = textValue + padding(length) + totalValue;
+
+                    List<PackageDetailsModel> packageDetailsModels = ModGlobal.packageDetailsModelList;
+
+                    for (PackageDetailsModel packageDetailsModel : packageDetailsModels) {
+                        if (packageDetailsModel.getPackage_id().equals(Integer.toString(itemDetailsModel.getProdID()))) {
+                            finalValue += "   " + (Integer.parseInt(packageDetailsModel.getProd_qty()) * itemDetailsModel.getMenuQty()) + " "
+                                    + packageDetailsModel.getProd_short_name() + "\n";
+                        }
+                    }
+
+                    if (packageDetailsModels.size() > 0) {
+                        textData.append(finalValue);
+                    } else
+                        textData.append(finalValue + "\n");
+
+                } else {
+                    textValue += itemDetailsModel.getMenuQty() + " " + itemDetailsModel.getShortName()
+                            + " @" + itemDetailsModel.getMenuPrice();
+
+                    totalValue = dec.format(Double.parseDouble(itemDetailsModel.getMenuPrice()) *
+                            itemDetailsModel.getMenuQty());
+
+                    length = 35 - (textValue.length() + totalValue.length());
+
+                    finalValue = textValue + padding(length) + totalValue;
+
+                    textData.append(finalValue + "\n");
+
+                }
+
+            }
+            textData.append("===================================\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            textData.append("Total Sales" + padding(35 - (11 + Double.toString(finalTotal)).length()) + finalTotal +  "\n");
+            textData.append("Vat" + padding(35 - 7) + "0.00" +  "\n");
+            textData.append(padding(35 - 10) + "==========" +  "\n");
+            textData.append("Amount Due" + padding(35 - (10 + Double.toString(finalTotal)).length()) + finalTotal +  "\n");
+            textData.append("Cash" + padding(35 - (4 + Double.toString(finalCash)).length()) + finalCash +  "\n");
+            textData.append("Change" + padding(35 - (6 + Double.toString(finalChange)).length()) + finalChange +  "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+
+            mPrinter.addFeedLine(2);
+
+
+
 
           /*  mPrinter.addTextAlign(Printer.ALIGN_CENTER);
             textData.append("Sample 1 feed line\n");
@@ -1186,14 +1271,22 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
             mPrinter.addCut(Printer.CUT_FEED);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             ShowMsg.showException(e, method, CashierActivity.this);
             return false;
 
         }
 
         return true;
+    }
+
+    String padding(int length) {
+        String value = "";
+
+        for (int a = 1; a <= length; a++)
+            value += " ";
+
+        return value;
     }
 
 
@@ -1216,9 +1309,6 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
     }
 
 
-
-
-
     private boolean printData() {
         if (mPrinter == null) {
             return false;
@@ -1235,8 +1325,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             ShowMsg.showMsg(makeErrorMessage(status), CashierActivity.this);
             try {
                 mPrinter.disconnect();
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 // Do nothing
             }
             return false;
@@ -1244,13 +1333,11 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
         try {
             mPrinter.sendData(Printer.PARAM_DEFAULT);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             ShowMsg.showException(e, "sendData", CashierActivity.this);
             try {
                 mPrinter.disconnect();
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 // Do nothing
             }
             return false;
@@ -1261,9 +1348,8 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
     private boolean initializeObject() {
         try {
-            mPrinter = new Printer(Printer.TM_U220 , Printer.MODEL_SOUTHASIA , CashierActivity.this);
-        }
-        catch (Exception e) {
+            mPrinter = new Printer(Printer.TM_U220, Printer.MODEL_SOUTHASIA, CashierActivity.this);
+        } catch (Exception e) {
             ShowMsg.showException(e, "Printer", CashierActivity.this);
             return false;
         }
@@ -1294,8 +1380,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
         try {
             mPrinter.connect(ModGlobal.printerSetup, Printer.PARAM_DEFAULT);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             ShowMsg.showException(e, "connect", CashierActivity.this);
             return false;
         }
@@ -1303,16 +1388,14 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         try {
             mPrinter.beginTransaction();
             isBeginTransaction = true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             ShowMsg.showException(e, "beginTransaction", CashierActivity.this);
         }
 
         if (isBeginTransaction == false) {
             try {
                 mPrinter.disconnect();
-            }
-            catch (Epos2Exception e) {
+            } catch (Epos2Exception e) {
                 // Do nothing
                 return false;
             }
@@ -1328,8 +1411,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
         try {
             mPrinter.endTransaction();
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             runOnUiThread(new Runnable() {
                 @Override
                 public synchronized void run() {
@@ -1340,8 +1422,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
         try {
             mPrinter.disconnect();
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             runOnUiThread(new Runnable() {
                 @Override
                 public synchronized void run() {
@@ -1360,11 +1441,9 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
         if (status.getConnection() == Printer.FALSE) {
             return false;
-        }
-        else if (status.getOnline() == Printer.FALSE) {
+        } else if (status.getOnline() == Printer.FALSE) {
             return false;
-        }
-        else {
+        } else {
             ;//print available
         }
 
