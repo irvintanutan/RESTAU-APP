@@ -97,6 +97,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
         setContentView(R.layout.activity_cashier);
 
+
         Toolbar tb = findViewById(R.id.app_bar);
         setSupportActionBar(tb);
         final ActionBar ab = getSupportActionBar();
@@ -104,7 +105,8 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         //ab.setDisplayShowHomeEnabled(true); // show or hide the default home button
         //ab.setDisplayHomeAsUpEnabled(true);
         ab.setLogo(R.drawable.logo);
-        ab.setTitle("  Hi Mr. Irvin Tanutan (CASHIER)");
+        ab.setTitle("  " + ModGlobal.userModel.getFirstName() + " " + ModGlobal.userModel.getMiddleName() + " "
+                        + ModGlobal.userModel.getLastName() +  " (CASHIER)");
         ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
         ab.setDisplayShowTitleEnabled(true); // disable the default title element here (for centered title)
 

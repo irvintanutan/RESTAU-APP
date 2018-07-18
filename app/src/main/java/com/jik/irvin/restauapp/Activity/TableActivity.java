@@ -34,6 +34,7 @@ import com.jik.irvin.restauapp.Model.ItemDetailsModel;
 import com.jik.irvin.restauapp.Adapter.MenuAdapter;
 import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.Model.UserModel;
 import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
 import com.jik.irvin.restauapp.Adapter.TransactionDataAdapter;
@@ -69,7 +70,6 @@ public class TableActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_table);
 
-
         Toolbar tb = findViewById(R.id.app_bar);
         setSupportActionBar(tb);
         final ActionBar ab = getSupportActionBar();
@@ -77,7 +77,9 @@ public class TableActivity extends AppCompatActivity {
         ab.setDisplayShowHomeEnabled(true); // show or hide the default home button
         ab.setDisplayHomeAsUpEnabled(true);
         //ab.setLogo(R.drawable.ic_timeline_white_24dp);
-        ab.setTitle("Hi Mr. Irvin Tanutan (WAITER)");
+
+        ab.setTitle(ModGlobal.userModel.getFirstName() + " " + ModGlobal.userModel.getMiddleName() + " " +
+                ModGlobal.userModel.getLastName() + " (WAITER)");
         ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
         ab.setDisplayShowTitleEnabled(true); // disable the default title element here (for centered title)
 

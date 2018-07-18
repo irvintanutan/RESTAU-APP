@@ -33,6 +33,7 @@ import com.jik.irvin.restauapp.Adapter.ItemDetailsAdapter;
 import com.jik.irvin.restauapp.Model.ItemDetailsModel;
 import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.Model.TransactionModel;
 import com.jik.irvin.restauapp.Services.MyService;
 import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
@@ -58,6 +59,7 @@ public class CheckOutActivity extends AppCompatActivity {
     private TableAdapter tableAdapter;
     DatabaseHelper databaseHelper = new DatabaseHelper(this);
     boolean warning = false;
+    private String orderType = "";
 
 
     private boolean isExist = false;
@@ -105,7 +107,13 @@ public class CheckOutActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         // Do nothing but close the dialog
                         // Do nothing
-                        new Sync(CheckOutActivity.this).execute("DINE-IN");
+                        ModGlobal.tableId.clear();
+                        orderType =  "DINE-IN";
+                        if (ModGlobal.transType.equals("NORMAL")) {
+                            new Sync(CheckOutActivity.this).execute("DINE-IN");
+                        }else {
+                            new VerifyTransactionDetails(CheckOutActivity.this).execute("");
+                        }
                     }
 
                 });
@@ -179,7 +187,12 @@ public class CheckOutActivity extends AppCompatActivity {
                         // Do nothing but close the dialog
                         // Do nothing
                         ModGlobal.tableId.clear();
-                        new Sync(CheckOutActivity.this).execute("TAKE-OUT");
+                        orderType =  "TAKE-OUT";
+                        if (ModGlobal.transType.equals("NORMAL")) {
+                            new Sync(CheckOutActivity.this).execute("TAKE-OUT");
+                        }else {
+                            new VerifyTransactionDetails(CheckOutActivity.this).execute("");
+                        }
 
                     }
 
@@ -522,7 +535,7 @@ public class CheckOutActivity extends AppCompatActivity {
 
                     JSONArray detailsArray = new JSONArray();
                     JSONObject detailsObject = new JSONObject();
-                    detailsObject.put("order_type", params[0]);
+                    detailsObject.put("order_type", orderType);
                     detailsObject.put("user_id", 103);
                     detailsArray.put(detailsObject);
 
@@ -561,7 +574,7 @@ public class CheckOutActivity extends AppCompatActivity {
                     JSONArray tableArray = new JSONArray();
 
 
-                    if (params[0].equals("DINE-IN")) {
+                    if (orderType.equals("DINE-IN")) {
 
                         if (ModGlobal.tableId.isEmpty()) {
                             JSONObject tableObject = new JSONObject();
@@ -585,76 +598,6 @@ public class CheckOutActivity extends AppCompatActivity {
                     Log.e("asd", load);
 
                     String response = WebRequest.makePostRequest(databaseHelper.getBaseUrl() + "add-transactions-api",
-                            load, serviceContext);
-
-
-                    Log.e("response", response);
-                } else {
-                    JSONObject mainJsonObject = new JSONObject();
-                    JSONArray mainJsonArray = new JSONArray();
-
-                    JSONArray detailsArray = new JSONArray();
-                    JSONObject detailsObject = new JSONObject();
-                    detailsObject.put("order_type", params[0]);
-                    detailsObject.put("status", "ONGOING");
-                    detailsArray.put(detailsObject);
-
-
-                    mainJsonObject.put("details", detailsArray);
-
-
-                    JSONArray packageArray = new JSONArray();
-                    JSONArray productsArray = new JSONArray();
-
-                    List<ItemDetailsModel> itemDetailsModels = ModGlobal.itemDetailsModelList;
-
-
-                    for (ItemDetailsModel itemDetailsModel : itemDetailsModels) {
-                        JSONObject packageObject = new JSONObject();
-                        JSONObject productsObject = new JSONObject();
-                        if (itemDetailsModel.getCatID().equals("200")) {
-
-                            packageObject.put("pack_id", itemDetailsModel.getProdID() - 1000);
-                            packageObject.put("qty", itemDetailsModel.getMenuQty());
-                            packageArray.put(packageObject);
-
-                        } else {
-
-                            productsObject.put("prod_id", itemDetailsModel.getProdID());
-                            productsObject.put("qty", itemDetailsModel.getMenuQty());
-                            productsArray.put(productsObject);
-
-                        }
-
-                    }
-
-                    mainJsonObject.put("products", productsArray);
-                    mainJsonObject.put("packages", packageArray);
-
-                    JSONArray tableArray = new JSONArray();
-
-                    if (params[0].equals("DINE-IN")) {
-
-                        if (ModGlobal.tableId.isEmpty()) {
-                            JSONObject tableObject = new JSONObject();
-                            tableObject.put("tbl_id", 0);
-                            tableArray.put(tableObject);
-                        } else {
-                            removeTable(0);
-                            for (int a = 0; a < ModGlobal.tableId.size(); a++) {
-                                JSONObject tableObject = new JSONObject();
-                                tableObject.put("tbl_id", ModGlobal.tableId.get(a));
-                                tableArray.put(tableObject);
-                            }
-                        }
-
-                        mainJsonObject.put("tables", tableArray);
-                    }
-                    mainJsonArray.put(mainJsonObject);
-                    String load = mainJsonArray.toString();
-                    Log.e("asd", load);
-
-                    String response = WebRequest.makePostRequest(databaseHelper.getBaseUrl() + "reset-transactions-api/" + ModGlobal.transactionId,
                             load, serviceContext);
 
 
@@ -758,4 +701,280 @@ public class CheckOutActivity extends AppCompatActivity {
         }
 
     }
+
+
+
+    class VerifyTransactionDetails extends AsyncTask<String, String, String> {
+
+        Context serviceContext;
+        WebRequest wr = new WebRequest();
+        ProgressDialog progressDialog;
+
+        public VerifyTransactionDetails(Context context) {
+            this.serviceContext = context;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(serviceContext);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle("PLEASE WAIT");
+            progressDialog.setMessage("Verifying Transaction details");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            String json = "";
+            try {
+
+                JSONArray menuItems = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-transactions-api", WebRequest.GET));
+
+                Log.e("ad", menuItems.toString());
+
+
+                for (int i = 0; i < menuItems.length(); i++) {
+                    JSONObject c = menuItems.getJSONObject(i);
+
+                      if (ModGlobal.transactionId.equals(c.getString("trans_id"))){
+                                json = "1";
+                                break;
+                      }
+                }
+
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return json;
+        }
+
+
+        @Override
+        protected void onPostExecute(String strFromDoInBg) {
+            progressDialog.dismiss();
+
+                if (strFromDoInBg.equals("1")){
+                    new SyncUpdate(CheckOutActivity.this).execute(orderType);
+                }else {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
+
+                    builder.setTitle("WARNING");
+                    builder.setMessage("Transaction ID  " + ModGlobal.transactionId + " is already been cleared. This transaction will be cancelled");
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            ModGlobal.itemDetailsModelList.clear();
+                            ModGlobal.tableId.clear();
+                            ModGlobal.transactionId = "";
+                            ModGlobal.transType = "NORMAL";
+
+                            startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
+                            finish();
+
+                        }
+
+                    });
+
+
+                    AlertDialog alert = builder.create();
+                    alert.setCancelable(false);
+                    alert.show();
+
+                }
+        }
+
+
+    }
+
+
+    class SyncUpdate extends AsyncTask<String, String, String> {
+
+        Context serviceContext;
+        WebRequest wr = new WebRequest();
+        ProgressDialog progressDialog;
+
+        public SyncUpdate(Context context) {
+            this.serviceContext = context;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(serviceContext);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle("PLEASE WAIT");
+            progressDialog.setMessage("Placing Order");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            String json = "";
+            try {
+
+                JSONObject mainJsonObject = new JSONObject();
+                JSONArray mainJsonArray = new JSONArray();
+
+                JSONArray detailsArray = new JSONArray();
+                JSONObject detailsObject = new JSONObject();
+                detailsObject.put("order_type", params[0]);
+
+                detailsObject.put("status", "ONGOING");
+
+                detailsArray.put(detailsObject);
+
+
+                mainJsonObject.put("details", detailsArray);
+
+
+                JSONArray packageArray = new JSONArray();
+                JSONArray productsArray = new JSONArray();
+
+                List<ItemDetailsModel> itemDetailsModels = ModGlobal.itemDetailsModelList;
+
+
+                for (ItemDetailsModel itemDetailsModel : itemDetailsModels) {
+                    JSONObject packageObject = new JSONObject();
+                    JSONObject productsObject = new JSONObject();
+                    if (itemDetailsModel.getCatID().equals("200")) {
+
+                        packageObject.put("pack_id", itemDetailsModel.getProdID() - 1000);
+                        packageObject.put("qty", itemDetailsModel.getMenuQty());
+                        packageArray.put(packageObject);
+
+                    } else {
+
+                        productsObject.put("prod_id", itemDetailsModel.getProdID());
+                        productsObject.put("qty", itemDetailsModel.getMenuQty());
+                        productsArray.put(productsObject);
+
+                    }
+
+                }
+
+                mainJsonObject.put("products", productsArray);
+                mainJsonObject.put("packages", packageArray);
+
+                JSONArray tableArray = new JSONArray();
+
+                if (params[0].equals("DINE-IN")) {
+
+                    if (ModGlobal.tableId.isEmpty()) {
+                        JSONObject tableObject = new JSONObject();
+                        tableObject.put("tbl_id", 0);
+                        tableArray.put(tableObject);
+                    } else {
+                        removeTable(0);
+                        for (int a = 0; a < ModGlobal.tableId.size(); a++) {
+                            JSONObject tableObject = new JSONObject();
+                            tableObject.put("tbl_id", ModGlobal.tableId.get(a));
+                            tableArray.put(tableObject);
+                        }
+                    }
+
+                    mainJsonObject.put("tables", tableArray);
+                }
+                mainJsonArray.put(mainJsonObject);
+                String load = mainJsonArray.toString();
+                Log.e("asd", load);
+
+                String response = WebRequest.makePostRequest(databaseHelper.getBaseUrl() + "reset-transactions-api/" + ModGlobal.transactionId,
+                        load, serviceContext);
+
+
+                Log.e("response", response);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                warning = true;
+                Log.e("asd", e.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return json;
+        }
+
+
+        @Override
+        protected void onPostExecute(String strFromDoInBg) {
+            progressDialog.dismiss();
+
+
+            if (!warning) {
+                ModGlobal.itemDetailsModelList.clear();
+                ModGlobal.transactionId = "";
+                ModGlobal.tableId.clear();
+                //ModGlobal.clear();
+                updateTable("CHECKOUT");
+                AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);
+
+                builder.setTitle("Information");
+                builder.setMessage("Transaction Successful!");
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        // Do nothing
+
+                        startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
+                        finish();
+                        dialog.dismiss();
+
+                    }
+
+                });
+
+                AlertDialog alert = builder.create();
+                alert.setCancelable(false);
+                alert.show();
+
+            } else {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);
+
+                builder.setTitle("WARNING");
+                builder.setMessage("Can't access server");
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        // Do nothing
+                        dialog.dismiss();
+
+                    }
+
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+
+        }
+
+
+    }
+
+
 }

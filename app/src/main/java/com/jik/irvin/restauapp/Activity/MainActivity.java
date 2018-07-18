@@ -26,6 +26,7 @@ import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.Model.PackageDetailsModel;
 import com.jik.irvin.restauapp.Model.PosModel;
 import com.jik.irvin.restauapp.Model.TableModel;
+import com.jik.irvin.restauapp.Model.UserModel;
 import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Services.WebRequest;
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     CardView login;
     EditText username, password;
     DatabaseHelper databaseHelper = new DatabaseHelper(this);
-    long lastDown , lastDuration;
+    long lastDown, lastDuration;
     boolean isPressed = false;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -60,23 +61,27 @@ public class MainActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
 
-        username.setText(ModGlobal.baseURL);
-        password.setText("USB:/dev/bus/usb/001/011");
 
-        login.setOnClickListener(new View.OnClickListener() {
+        username.setText("janedoe");
+        password.setText("janedoe");
+
+
+        /*login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
 
                 new SignInRequest(MainActivity.this).execute("");
 
             }
-        });
+        });*/
 
 
         login.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     lastDown = System.currentTimeMillis();
                     isPressed = true;
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -84,13 +89,12 @@ public class MainActivity extends AppCompatActivity {
                     isPressed = false;
                 }
 
-                if (((lastDuration / 1000) > 5) && !isPressed){
-
+                if (((lastDuration / 1000) > 5) && !isPressed) {
 
 
                     LayoutInflater inflater = getLayoutInflater();
                     View alertLayout = inflater.inflate(R.layout.app_register, null);
-                    final EditText password =  alertLayout.findViewById(R.id.et_password);
+                    final EditText password = alertLayout.findViewById(R.id.et_password);
 
 
                     AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
@@ -115,17 +119,18 @@ public class MainActivity extends AppCompatActivity {
                             String pass = password.getText().toString();
 
                             if (pass.equals("")) {
-                            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                            startActivity(intent);
-                            finish();
+                                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                                startActivity(intent);
+                                finish();
                             } else
                                 dialog.dismiss();
                         }
                     });
                     AlertDialog dialog = alert.create();
                     dialog.show();
-                }else {
-                    new SignInRequest(MainActivity.this).execute("");
+                } else {
+                    if (!isPressed)
+                        new VerifyUser(MainActivity.this).execute(username.getText().toString() , password.getText().toString());
                 }
 
                 return true;
@@ -136,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
                 Settings.Secure.ANDROID_ID);
 
         databaseHelper.addPos(new PosModel("2", "2000000", androidId));
-
 
 
     }
@@ -296,12 +300,112 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute("");
             progressDialog.dismiss();
             if (strFromDoInBg.equals("1")) {
-                //startActivity(new Intent(MainActivity.this, CashierActivity.class));
-                startActivity(new Intent(MainActivity.this, TableActivity.class));
-                finish();
+                if (ModGlobal.userModelList.get(0).getUserType().equals("Staff")) {
+                    startActivity(new Intent(MainActivity.this, TableActivity.class));
+                    finish();
+                } else if (ModGlobal.userModelList.get(0).getUserType().equals("Cashier")) {
+                    startActivity(new Intent(MainActivity.this, CashierActivity.class));
+                    finish();
+                }
+
+
             }
         }
     }
+
+
+    class VerifyUser extends AsyncTask<String, String, String> {
+        WebRequest wr = new WebRequest();
+        private Context context;
+        ProgressDialog progressDialog;
+
+        public VerifyUser(Context c) {
+            this.context = c;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle("Please wait");
+            progressDialog.setMessage("Verifying User Credentials");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            String json = "0";
+            try {
+                Log.e("url", databaseHelper.getBaseUrl());
+
+                ModGlobal.userModelList.clear();
+                ModGlobal.userModel = null;
+                JSONArray users = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-users-api", WebRequest.GET));
+
+
+                for (int i = 0; i < users.length(); i++) {
+                    JSONObject c = users.getJSONObject(i);
+
+                    if (c.getString("username").equals(params[0]) && c.getString("password").equals(params[1])) {
+                        json = "1";
+
+                        ModGlobal.userModelList.add(new UserModel(c.getString("user_id"),
+                                c.getString("user_type"), c.getString("username"),
+                                c.getString("password"), c.getString("lastname"),
+                                c.getString("firstname"), c.getString("middlename")));
+
+                        break;
+                    }
+
+                }
+
+
+            } catch (JSONException e) {
+                progressDialog.dismiss();
+                e.printStackTrace();
+                Log.e("error on downloading", e.toString());
+            }
+
+            return json;
+        }
+
+
+        @Override
+        protected void onPostExecute(String strFromDoInBg) {
+            super.onPostExecute("");
+            progressDialog.dismiss();
+            if (strFromDoInBg.equals("1")) {
+                ModGlobal.userModel = ModGlobal.userModelList.get(0);
+                new SignInRequest(MainActivity.this).execute("");
+
+            }else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                builder.setTitle("Warning");
+                builder.setMessage("Unauthorized User");
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        // Do nothing
+                        dialog.dismiss();
+
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        }
+    }
+
 
     @Override
     public void onBackPressed() {
