@@ -62,9 +62,12 @@ public class MainActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
 
 
+/*
+        username.setText("xanderford");
+        password.setText("xanderford");
+*/
         username.setText("janedoe");
         password.setText("janedoe");
-
 
         /*login.setOnClickListener(new View.OnClickListener() {
             @Override

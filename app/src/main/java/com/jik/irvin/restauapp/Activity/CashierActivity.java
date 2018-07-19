@@ -61,7 +61,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CashierActivity extends AppCompatActivity implements ReceiveListener {
@@ -1074,6 +1076,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         String companyName = wordwrap(c.getName(), 15);
         String companyAddress = wordwrap(c.getAddress(), 25);
         String companyTin = wordwrap(c.getTin(), 25);
+        String companyCity = wordwrap(c.getCity() , 25);
 
 
         if (mPrinter == null) {
@@ -1090,6 +1093,11 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
             mPrinter.addTextSize(1, 1);
             textData.append(companyAddress + "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextSize(1, 1);
+            textData.append(companyCity + "\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
@@ -1123,7 +1131,6 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             textData.append("===================================\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
-
             mPrinter.addTextAlign(Printer.ALIGN_RIGHT);
             textData.append("Php\n");
             mPrinter.addText(textData.toString());
@@ -1183,21 +1190,43 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
                 }
 
             }
+
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextStyle(Printer.FALSE , Printer.FALSE , Printer.FALSE , Printer.COLOR_1);
             textData.append("===================================\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
-            textData.append("Total Sales" + padding(35 - (11 + Double.toString(finalTotal)).length()) + finalTotal +  "\n");
-            textData.append("Vat" + padding(35 - 7) + "0.00" +  "\n");
+            mPrinter.addTextStyle(Printer.FALSE , Printer.FALSE , Printer.TRUE , Printer.COLOR_1);
+            double vat = finalTotal * .12;
+            textData.append("Total Sales" + padding(35 - (11 + dec.format(finalTotal - vat).length())) + dec.format(finalTotal - vat) +  "\n");
+
+            textData.append("Vat" + padding(35 - (3 + dec.format(vat).length())) + dec.format(vat) +  "\n");
             textData.append(padding(35 - 10) + "==========" +  "\n");
-            textData.append("Amount Due" + padding(35 - (10 + Double.toString(finalTotal)).length()) + finalTotal +  "\n");
-            textData.append("Cash" + padding(35 - (4 + Double.toString(finalCash)).length()) + finalCash +  "\n");
-            textData.append("Change" + padding(35 - (6 + Double.toString(finalChange)).length()) + finalChange +  "\n");
+            textData.append("Amount Due" + padding(35 - (10 + dec.format(finalTotal).length())) + dec.format(finalTotal) +  "\n");
+            textData.append("Cash" + padding(35 - (4 + dec.format(finalCash).length())) + dec.format(finalCash) +  "\n");
+            textData.append("Change" + padding(35 - (6 + dec.format(finalChange).length())) + dec.format(finalChange) +  "\n\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
 
-            mPrinter.addFeedLine(2);
+            mPrinter.addTextStyle(Printer.FALSE , Printer.FALSE , Printer.FALSE , Printer.COLOR_1);
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            String pattern = "EEE, dd MMMM yyyy hh:mm aaa";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+            String date = simpleDateFormat.format(new Date());
+            textData.append(date + "\n\n");
+            textData.append("Innotech Solutions\n");
+            textData.append("Thank You Come Again\n");
+
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+
+
+            mPrinter.addFeedLine(1);
 
 
 

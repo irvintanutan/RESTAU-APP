@@ -135,7 +135,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         values.put(last_receipt_number, lrn);
-        db.update(tbl_pos, values, "pos_id=1", null);
+        db.update(tbl_pos, values, null, null);
 
 
         db.close(); // Closing database connection
