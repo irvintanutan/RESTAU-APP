@@ -588,6 +588,10 @@ public class TableActivity extends AppCompatActivity {
 
                 ModGlobal.itemDetailsModelList.clear();
                 ModGlobal.tableId.clear();
+                ModGlobal.isBillOutPrinted = 0;
+
+                JSONObject isBillOutPrinted = menuItems.getJSONObject("details");
+                ModGlobal.isBillOutPrinted = isBillOutPrinted.getInt("is_billout_printed");
 
                 JSONArray trxDetailsProducts = menuItems.getJSONArray("products");
 

@@ -10,9 +10,10 @@ public class CompanyConfigModel {
     private String vat;
     private String bs_price;
     private String img_comp;
+    private String pin;
 
 
-    public CompanyConfigModel(String name, String address, String city, String tin, String vat, String bs_price, String img_comp) {
+    public CompanyConfigModel(String name, String address, String city, String tin, String vat, String bs_price, String img_comp, String pin) {
         this.name = name;
         this.address = address;
         this.city = city;
@@ -20,6 +21,7 @@ public class CompanyConfigModel {
         this.vat = vat;
         this.bs_price = bs_price;
         this.img_comp = img_comp;
+        this.pin = pin;
     }
 
 
@@ -77,6 +79,14 @@ public class CompanyConfigModel {
 
     public void setImg_comp(String img_comp) {
         this.img_comp = img_comp;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 
 }

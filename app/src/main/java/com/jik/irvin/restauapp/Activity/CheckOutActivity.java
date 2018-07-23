@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -107,7 +108,6 @@ public class CheckOutActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         // Do nothing but close the dialog
                         // Do nothing
-                        ModGlobal.tableId.clear();
                         orderType =  "DINE-IN";
                         if (ModGlobal.transType.equals("NORMAL")) {
                             new Sync(CheckOutActivity.this).execute("DINE-IN");
@@ -150,6 +150,7 @@ public class CheckOutActivity extends AppCompatActivity {
                         ModGlobal.tableId.clear();
                         ModGlobal.transactionId = "";
                         ModGlobal.transType = "NORMAL";
+                        ModGlobal.isBillOutPrinted = 0;
 
                         startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
                         finish();
@@ -222,9 +223,66 @@ public class CheckOutActivity extends AppCompatActivity {
 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
             @Override
-            public void onClick(View view, int position) {
-                MenuModel menu = ModGlobal.menuModelList.get(ModGlobal.itemDetailsModelList.get(position).getPosition());
-                PopUpMenu(menu);
+            public void onClick(View view, final int position) {
+                if (ModGlobal.isBillOutPrinted == 0) {
+                    MenuModel menu = ModGlobal.menuModelList.get(ModGlobal.itemDetailsModelList.get(position).getPosition());
+                    PopUpMenu(menu);
+                }else{
+                    LayoutInflater inflater = getLayoutInflater();
+                    View alertLayout = inflater.inflate(R.layout.app_register, null);
+                    final EditText password = alertLayout.findViewById(R.id.et_password);
+
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(CheckOutActivity.this);
+                    alert.setIcon(CheckOutActivity.this.getResources().getDrawable(R.drawable.ic_fingerprint_black_24dp));
+                    alert.setTitle("Enter Password");
+                    // this is set the view from XML inside AlertDialog
+                    alert.setView(alertLayout);
+                    // disallow cancel of AlertDialog on click of back button and outside touch
+                    alert.setCancelable(false);
+                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+
+                    alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String pass = password.getText().toString();
+
+                            if (pass.equals(ModGlobal.companyConfigModels.get(0).getPin())) {
+
+                                MenuModel menu = ModGlobal.menuModelList.get(ModGlobal.itemDetailsModelList.get(position).getPosition());
+                                PopUpMenu(menu);
+
+                            } else{
+                                AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
+
+                                builder.setTitle("WARNING");
+                                builder.setMessage("Wrong Admin Password");
+
+
+                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                AlertDialog alert = builder.create();
+                                alert.show();
+                            }
+
+                        }
+                    });
+                    AlertDialog dialog = alert.create();
+                    dialog.show();
+                }
             }
 
             @Override
@@ -258,9 +316,67 @@ public class CheckOutActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             // Do nothing but close the dialog
                             // Do nothing
-                            ModGlobal.itemDetailsModelList.remove(position);
-                            itemDetailsAdapter.notifyDataSetChanged();
-                            computeTotal();
+                            if (ModGlobal.isBillOutPrinted == 0) {
+                                ModGlobal.itemDetailsModelList.remove(position);
+                                itemDetailsAdapter.notifyDataSetChanged();
+                                computeTotal();
+                            }else {
+                                LayoutInflater inflater = getLayoutInflater();
+                                View alertLayout = inflater.inflate(R.layout.app_register, null);
+                                final EditText password = alertLayout.findViewById(R.id.et_password);
+
+
+                                AlertDialog.Builder alert = new AlertDialog.Builder(CheckOutActivity.this);
+                                alert.setIcon(CheckOutActivity.this.getResources().getDrawable(R.drawable.ic_fingerprint_black_24dp));
+                                alert.setTitle("Enter Password");
+                                // this is set the view from XML inside AlertDialog
+                                alert.setView(alertLayout);
+                                // disallow cancel of AlertDialog on click of back button and outside touch
+                                alert.setCancelable(false);
+                                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                });
+
+                                alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String pass = password.getText().toString();
+
+                                        if (pass.equals(ModGlobal.companyConfigModels.get(0).getPin())) {
+
+                                            ModGlobal.itemDetailsModelList.remove(position);
+                                            itemDetailsAdapter.notifyDataSetChanged();
+                                            computeTotal();
+
+                                        } else{
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
+
+                                            builder.setTitle("WARNING");
+                                            builder.setMessage("Wrong Admin Password");
+
+
+                                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+
+                                            AlertDialog alert = builder.create();
+                                            alert.show();
+                                        }
+
+                                    }
+                                });
+                                AlertDialog dialog1 = alert.create();
+                                dialog1.show();
+                            }
 
                         }
 
@@ -305,6 +421,9 @@ public class CheckOutActivity extends AppCompatActivity {
                             ModGlobal.tableAdapter.notifyDataSetChanged();
                         }
                     }
+
+
+                    Log.e("asd" , ModGlobal.tableId.toString());
                 } catch (Exception e) {
                     Log.e("asd", "something went wrong");
                 }
@@ -536,7 +655,7 @@ public class CheckOutActivity extends AppCompatActivity {
                     JSONArray detailsArray = new JSONArray();
                     JSONObject detailsObject = new JSONObject();
                     detailsObject.put("order_type", orderType);
-                    detailsObject.put("user_id", 103);
+                    detailsObject.put("user_id", ModGlobal.userModel.getUserId());
                     detailsArray.put(detailsObject);
 
 
@@ -592,7 +711,6 @@ public class CheckOutActivity extends AppCompatActivity {
                         mainJsonObject.put("tables", tableArray);
                     }
 
-
                     mainJsonArray.put(mainJsonObject);
                     String load = mainJsonArray.toString();
                     Log.e("asd", load);
@@ -624,6 +742,7 @@ public class CheckOutActivity extends AppCompatActivity {
                 ModGlobal.itemDetailsModelList.clear();
                 ModGlobal.transactionId = "";
                 ModGlobal.tableId.clear();
+                ModGlobal.isBillOutPrinted = 0;
                 //ModGlobal.clear();
                 updateTable("CHECKOUT");
                 AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);
@@ -924,6 +1043,7 @@ public class CheckOutActivity extends AppCompatActivity {
                 ModGlobal.itemDetailsModelList.clear();
                 ModGlobal.transactionId = "";
                 ModGlobal.tableId.clear();
+                ModGlobal.isBillOutPrinted = 0;
                 //ModGlobal.clear();
                 updateTable("CHECKOUT");
                 AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);

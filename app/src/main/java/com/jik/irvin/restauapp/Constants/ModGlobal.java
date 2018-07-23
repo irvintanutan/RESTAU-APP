@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ModGlobal {
 
-    public static String baseURL = "http://192.168.88.15/RESTAU-APP-BACKEND/resto-app/";
+    public static String baseURL = "http://192.168.88.22/~jik/RESTAU-APP-BACKEND/resto-app/";
     public static List<MenuModel> menuModelList = new ArrayList<>();
     public static List<MenuModel> menuModelListCopy = new ArrayList<>();
     public static List<CategoryModel> categoryModelList = new ArrayList<>();
@@ -30,6 +30,7 @@ public class ModGlobal {
 
     public static String transactionId = "";
     public static String transType = "NORMAL";
+    public static int isBillOutPrinted = 0;
     public static TableAdapter tableAdapter;
     public static CashieringTableAdapter cashieringTableAdapter;
 

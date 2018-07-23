@@ -62,12 +62,10 @@ public class MainActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
 
 
-/*
         username.setText("xanderford");
         password.setText("xanderford");
-*/
-        username.setText("janedoe");
-        password.setText("janedoe");
+    /*    username.setText("janedoe");
+        password.setText("janedoe");*/
 
         /*login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     isPressed = false;
                 }
 
-                if (((lastDuration / 1000) > 5) && !isPressed) {
+                if (((lastDuration / 1000) > 3) && !isPressed) {
 
 
                     LayoutInflater inflater = getLayoutInflater();
@@ -283,8 +281,8 @@ public class MainActivity extends AppCompatActivity {
                             c.getString("tin"),
                             c.getString("vat"),
                             c.getString("bs_price"),
-                            c.getString("img")
-                    ));
+                            c.getString("img"),
+                            c.getString("password")));
                 }
 
                 json = "1";
@@ -310,8 +308,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(MainActivity.this, CashierActivity.class));
                     finish();
                 }
-
-
             }
         }
     }
