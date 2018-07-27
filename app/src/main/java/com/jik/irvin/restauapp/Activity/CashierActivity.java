@@ -25,7 +25,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +46,7 @@ import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.CategoryModel;
 import com.jik.irvin.restauapp.Constants.ClickListener;
 import com.jik.irvin.restauapp.Model.CompanyConfigModel;
+import com.jik.irvin.restauapp.Model.DiscountModel;
 import com.jik.irvin.restauapp.Model.ItemDetailsModel;
 import com.jik.irvin.restauapp.Adapter.LineItemAdapter;
 import com.jik.irvin.restauapp.Model.MenuModel;
@@ -79,6 +83,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
     private int itemDetailsIndex = 0, itemDetailsQty = 1;
     boolean isExist = false;
     private AlertDialog finalDialog = null;
+    private String transType = "";
 
     private RecyclerView recyclerViewTable;
     private TableAdapter tableAdapter;
@@ -86,7 +91,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
     DatabaseHelper databaseHelper = new DatabaseHelper(this);
     boolean warning = false;
 
-    private double finalSubTotal = 0.00, finalTotal = 0.00, finalCash = 0.00, finalChange = 0.00;
+    private double finalSubTotal = 0.00, finalTotal = 0.00, finalCash = 0.00, finalChange = 0.00, finalDiscount = 0.00;
 
     private Printer mPrinter = null;
 
@@ -327,6 +332,8 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             public void onClick(DialogInterface dialog, int which) {
                 // Do nothing but close the dialog
                 // Do nothing
+                ModGlobal.itemDetailsModelList.clear();
+                ModGlobal.tableModelList.clear();
                 startActivity(new Intent(CashierActivity.this, MainActivity.class));
                 finish();
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -478,8 +485,6 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
 
         finalDialog = alert.create();
-        finalDialog.setCancelable(false);
-
         finalDialog.show();
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.width = (int) this.getResources().getDimension(R.dimen.width);
@@ -491,6 +496,58 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
     void addTable(int id) {
         ModGlobal.tableId.add(id);
+    }
+
+
+    public void PopUpDiscount() {
+
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.discount_view, null);
+
+
+        final Spinner spinner = alertLayout.findViewById(R.id.spinner);
+
+        List<DiscountModel> discountModels = ModGlobal.discountModelList;
+        final String[] values = new String[discountModels.size()];
+        int [] discountId = new int[discountModels.size()];
+        int counter = 0;
+        for ( DiscountModel discountModel : discountModels){
+
+            values[counter] = discountModel.getDesc();
+            discountId[counter] = discountModel.getDiscId();
+
+        }
+
+        spinner.setAdapter(new ArrayAdapter<>(CashierActivity.this, android.R.layout.simple_list_item_1, values));
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+                int index = arg0.getSelectedItemPosition();
+                Toast.makeText(getBaseContext(),
+                        "You have selected item : " + values[index],
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        // this is set the view from XML inside AlertDialog
+        alert.setView(alertLayout);
+        // disallow cancel of AlertDialog on click of back button and outside touch
+
+
+        finalDialog = alert.create();
+        finalDialog.show();
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.width = (int) this.getResources().getDimension(R.dimen.width);
+        lp.height = (int) this.getResources().getDimension(R.dimen.height_payment);
+
+        finalDialog.getWindow().setAttributes(lp);
+        //dialog.getWindow().setLayout(800, 400);
     }
 
 
@@ -516,7 +573,11 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
 
         final CardView clear = alertLayout.findViewById(R.id.clear);
-        final CardView checkout = alertLayout.findViewById(R.id.checkout);
+        final CardView clearDiscount = alertLayout.findViewById(R.id.clearDiscount);
+        final CardView discount = alertLayout.findViewById(R.id.discount);
+        final CardView dineIn = alertLayout.findViewById(R.id.dineIn);
+        final CardView takeOut = alertLayout.findViewById(R.id.takeOut);
+        final CardView close = alertLayout.findViewById(R.id.close);
 
         final EditText subTotalValue = alertLayout.findViewById(R.id.subTotalValue);
         final EditText discountValue = alertLayout.findViewById(R.id.discountValue);
@@ -561,7 +622,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             }
         });
 
-        checkout.setOnClickListener(new View.OnClickListener() {
+        dineIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -611,6 +672,88 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
                     alert.show();
 
                 }
+            }
+        });
+
+
+        takeOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (finalChange < 0) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CashierActivity.this);
+
+                    builder.setTitle("WARNING");
+                    builder.setMessage("Insufficient Amount");
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                } else {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CashierActivity.this);
+
+                    builder.setTitle("TAKE OUT");
+                    builder.setMessage("Are you sure you want to place the order ?");
+
+                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            new Sync(CashierActivity.this).execute("TAKE-OUT");
+                        }
+
+                    });
+                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                }
+            }
+        });
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finalDialog.dismiss();
+            }
+        });
+
+
+        clearDiscount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ModGlobal.discount = 0.00;
+                ModGlobal.discType = 0;
+                discountValue.setText(dec.format(ModGlobal.discount));
+                discountValue.setTextColor(Color.BLACK);
+
+            }
+        });
+
+
+        discount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopUpDiscount();
             }
         });
 
@@ -803,7 +946,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         // disallow cancel of AlertDialog on click of back button and outside touch
 
 
-        alert.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
+      /*  alert.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
                 // Do nothing but close the dialog
@@ -812,7 +955,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
             }
 
-        });
+        });*/
 
         finalDialog = alert.create();
         finalDialog.setCancelable(false);
@@ -891,21 +1034,21 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             String json = "";
 
             try {
-
+                transType = params[0];
                 JSONObject mainJsonObject = new JSONObject();
                 JSONArray mainJsonArray = new JSONArray();
 
                 JSONArray detailsArray = new JSONArray();
                 JSONObject detailsObject = new JSONObject();
                 detailsObject.put("order_type", params[0]);
-                detailsObject.put("user_id", 103);
-                detailsObject.put("discount", 0.00);
-                detailsObject.put("disc_type", 0);
+                detailsObject.put("user_id", ModGlobal.userModel.getUserId());
+                detailsObject.put("discount", ModGlobal.discount);
+                detailsObject.put("disc_type", ModGlobal.discType);
                 detailsObject.put("method", "Cash");
                 detailsObject.put("cash_amt", finalCash);
                 detailsObject.put("card_number", "");
                 detailsObject.put("cust_name", "");
-                detailsObject.put("cashier_id", 103);
+                detailsObject.put("cashier_id", ModGlobal.userModel.getUserId());
                 detailsObject.put("amount_due", finalTotal);
                 detailsObject.put("receipt_no", databaseHelper.getLastReceiptNumber());
 
@@ -1011,6 +1154,9 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
                         ModGlobal.tableId.clear();
                         ModGlobal.transactionId = "";
                         ModGlobal.transType = "NORMAL";
+                        ModGlobal.discount = 0.00;
+                        ModGlobal.discType = 0;
+                        ModGlobal.discountLabel = "";
                         tableNumber.setText("Table #");
                         finalSubTotal = 0.00;
                         finalTotal = 0.00;
@@ -1121,6 +1267,13 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            mPrinter.addTextSize(2, 1);
+            textData.append(transType + "\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextSize(1, 1);
             mPrinter.addTextAlign(Printer.ALIGN_LEFT);
             textData.append("Receipt#: " + databaseHelper.getLastReceiptNumber() + "\n");
             textData.append("Staff: " + ModGlobal.userModel.getUsername() + "\n");

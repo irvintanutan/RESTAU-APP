@@ -22,6 +22,7 @@ import com.jik.irvin.restauapp.Constants.ModGlobal;
 import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.CategoryModel;
 import com.jik.irvin.restauapp.Model.CompanyConfigModel;
+import com.jik.irvin.restauapp.Model.DiscountModel;
 import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.Model.PackageDetailsModel;
 import com.jik.irvin.restauapp.Model.PosModel;
@@ -285,6 +286,19 @@ public class MainActivity extends AppCompatActivity {
                             c.getString("password")));
                 }
 
+
+                JSONArray discount = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-discounts-api", WebRequest.GET));
+                for (int i = 0; i < discount.length(); i++) {
+                    JSONObject c = discount.getJSONObject(i);
+                    ModGlobal.discountModelList.add(new DiscountModel(
+                            c.getInt("disc_id"),
+                            c.getString("name"),
+                            c.getString("descr"),
+                            c.getDouble("less_p"),
+                            c.getDouble("less_c")));
+                }
+
+
                 json = "1";
             } catch (JSONException e) {
                 progressDialog.dismiss();
@@ -302,7 +316,8 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.dismiss();
             if (strFromDoInBg.equals("1")) {
                 if (ModGlobal.userModelList.get(0).getUserType().equals("Staff")) {
-                    startActivity(new Intent(MainActivity.this, TableActivity.class));
+                    //startActivity(new Intent(MainActivity.this, TableActivity.class));
+                    startActivity(new Intent(MainActivity.this, CashierActivity.class));
                     finish();
                 } else if (ModGlobal.userModelList.get(0).getUserType().equals("Cashier")) {
                     startActivity(new Intent(MainActivity.this, CashierActivity.class));
