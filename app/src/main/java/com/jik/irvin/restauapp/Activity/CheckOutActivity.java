@@ -52,7 +52,7 @@ import java.util.List;
 
 public class CheckOutActivity extends AppCompatActivity {
 
-    private CardView dineIn, cancel, takeOut;
+    private CardView dineIn, cancel, takeOut, refund;
     private TextView totalPrice , transactionId;
     private RecyclerView recyclerView;
     private RecyclerView recyclerViewTable;
@@ -79,9 +79,24 @@ public class CheckOutActivity extends AppCompatActivity {
         dineIn = findViewById(R.id.button);
         cancel = findViewById(R.id.cancel);
         takeOut = findViewById(R.id.takeOut);
+        refund = findViewById(R.id.refund);
         totalPrice = findViewById(R.id.totalPrice);
         transactionId = findViewById(R.id.transactionId);
         recyclerViewTable = findViewById(R.id.recycler_view_table_list);
+
+
+
+        if (ModGlobal.transType.equals("REFUND")){
+            cancel.setVisibility(View.VISIBLE);
+            refund.setVisibility(View.VISIBLE);
+            dineIn.setVisibility(View.GONE);
+            takeOut.setVisibility(View.GONE);
+        }else {
+            cancel.setVisibility(View.VISIBLE);
+            refund.setVisibility(View.GONE);
+            dineIn.setVisibility(View.VISIBLE);
+            takeOut.setVisibility(View.VISIBLE);
+        }
 
         Toolbar tb = findViewById(R.id.app_bar2);
         setSupportActionBar(tb);
@@ -209,6 +224,14 @@ public class CheckOutActivity extends AppCompatActivity {
                 AlertDialog alert = builder.create();
                 alert.setCancelable(false);
                 alert.show();
+            }
+        });
+
+
+        refund.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 
@@ -440,12 +463,18 @@ public class CheckOutActivity extends AppCompatActivity {
 
         computeTotal();
 
-        if (ModGlobal.transactionId.isEmpty()){
-            transactionId.setText("transaction # : NEW");
-        }else {
-            transactionId.setText("transaction # : " + ModGlobal.transactionId);
-        }
+        if (ModGlobal.transType.equals("REFUND")){
 
+            transactionId.setText("REFUND (receipt # : (" + ModGlobal.receiptNumber  + ")");
+
+        } else {
+
+            if (ModGlobal.transactionId.isEmpty()) {
+                transactionId.setText("transaction # : NEW");
+            } else {
+                transactionId.setText("transaction # : " + ModGlobal.transactionId);
+            }
+        }
         startService(new Intent(this, MyService.class));
     }
 

@@ -14,6 +14,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,7 +36,6 @@ import com.jik.irvin.restauapp.Model.ItemDetailsModel;
 import com.jik.irvin.restauapp.Adapter.MenuAdapter;
 import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
-import com.jik.irvin.restauapp.Model.UserModel;
 import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
 import com.jik.irvin.restauapp.Adapter.TransactionDataAdapter;
@@ -57,7 +58,7 @@ public class TableActivity extends AppCompatActivity {
     private TransactionDataAdapter transactionDataAdapter;
     private boolean isExist = false;
     private int itemDetailsIndex = 0, itemDetailsQty = 1;
-    private CardView proceed, transactionList;
+    private CardView proceed, transactionList, refundTransaction;
     private TextView cartItems;
     private ImageView logo;
 
@@ -83,7 +84,7 @@ public class TableActivity extends AppCompatActivity {
         ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
         ab.setDisplayShowTitleEnabled(true); // disable the default title element here (for centered title)
 
-
+        refundTransaction = findViewById(R.id.view_refund);
         proceed = findViewById(R.id.button_proceed);
         transactionList = findViewById(R.id.view_transaction);
         logo = findViewById(R.id.logo);
@@ -98,6 +99,7 @@ public class TableActivity extends AppCompatActivity {
         recyclerViewCategory.setItemAnimator(new DefaultItemAnimator());
         categoryAdapter = new CategoryAdapter(this, ModGlobal.categoryModelList);
         recyclerViewCategory.setAdapter(categoryAdapter);
+
 
         proceed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,10 +131,9 @@ public class TableActivity extends AppCompatActivity {
         });
 
 
-        transactionList.setOnClickListener(new View.OnClickListener() {
+        refundTransaction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (!ModGlobal.itemDetailsModelList.isEmpty()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(TableActivity.this);
 
@@ -155,7 +156,37 @@ public class TableActivity extends AppCompatActivity {
                     AlertDialog alert = builder.create();
                     alert.show();
                 } else
-                    new SyncTransaction(TableActivity.this).execute("");
+                    showReceiptEntry();
+            }
+        });
+
+        transactionList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                    if (!ModGlobal.itemDetailsModelList.isEmpty() || ModGlobal.transType.equals("REFUND")) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(TableActivity.this);
+
+                        builder.setTitle("Warning");
+                        builder.setMessage("You cannot view previous transactions if there is a pending transaction currently. " +
+                                "Please cancel or complete the transaction first before doing this operation");
+
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Do nothing but close the dialog
+                                // Do nothing
+                                startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
+                                finish();
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                            }
+
+                        });
+
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    } else
+                        new SyncTransaction(TableActivity.this).execute("");
 
             }
         });
@@ -351,33 +382,58 @@ public class TableActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        if (!ModGlobal.itemDetailsModelList.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(TableActivity.this);
 
-        builder.setTitle("Confirm");
-        builder.setMessage("Are you sure you want to quit ?");
+            builder.setTitle("Warning");
+            builder.setMessage("You cannot view previous transactions if there is a pending transaction currently. " +
+                    "Please cancel or complete the transaction first before doing this operation");
 
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-            public void onClick(DialogInterface dialog, int which) {
-                // Do nothing but close the dialog
-                // Do nothing
-                startActivity(new Intent(TableActivity.this, MainActivity.class));
-                finish();
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                public void onClick(DialogInterface dialog, int which) {
+                    // Do nothing but close the dialog
+                    // Do nothing
+                    startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
+                    finish();
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                }
 
-            }
+            });
 
-        });
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            AlertDialog alert = builder.create();
+            alert.show();
+        } else {
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
 
-        AlertDialog alert = builder.create();
-        alert.show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle("Confirm");
+            builder.setMessage("Are you sure you want to quit ?");
+
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    // Do nothing but close the dialog
+                    // Do nothing
+                    startActivity(new Intent(TableActivity.this, MainActivity.class));
+                    finish();
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+                }
+
+            });
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
     }
 
     @Override
@@ -677,5 +733,136 @@ public class TableActivity extends AppCompatActivity {
     void addTable(int id) {
         ModGlobal.tableId.add(id);
     }
+
+    class RefundTransaction extends AsyncTask<String, String, String> {
+
+        Context serviceContext;
+        WebRequest wr = new WebRequest();
+        ProgressDialog progressDialog;
+
+        public RefundTransaction(Context context) {
+            this.serviceContext = context;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(serviceContext);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle("PLEASE WAIT");
+            progressDialog.setMessage("Fetching Transaction/s");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            String json = "";
+            try {
+
+                ModGlobal.receiptNumber = "";
+                JSONObject refundTransaction = new JSONObject(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-trans-details-by-receipt-no-api/" + params[0], WebRequest.GET));
+
+
+                JSONObject jsonObject = refundTransaction.getJSONObject("details");
+
+                ModGlobal.receiptNumber = jsonObject.getString("receipt_no");
+
+                JSONArray prodArr = refundTransaction.getJSONArray("products");
+                JSONArray packArr = refundTransaction.getJSONArray("packages");
+
+                ModGlobal.itemDetailsModelList.clear();
+                ModGlobal.tableId.clear();
+                ModGlobal.isBillOutPrinted = 0;
+
+
+
+                for (int i = 0; i < prodArr.length(); i++) {
+                    JSONObject c = prodArr.getJSONObject(i);
+                    ModGlobal.itemDetailsModelList.add(new ItemDetailsModel(
+                            c.getInt("prod_id"),
+                            c.getString("price"),
+                            c.getInt("qty"),
+                            c.getString("img"),
+                            c.getString("name"),
+                            c.getString("cat_id"),
+                            getPosition(c.getInt("prod_id")),
+                            c.getString("short_name")));
+                }
+
+
+
+                for (int i = 0; i < packArr.length(); i++) {
+                    JSONObject c = packArr.getJSONObject(i);
+                    ModGlobal.itemDetailsModelList.add(new ItemDetailsModel(
+                            c.getInt("pack_id") + 1000,
+                            c.getString("price"),
+                            c.getInt("qty"),
+                            c.getString("img"),
+                            c.getString("name"),
+                            "200",
+                            getPosition(c.getInt("pack_id") + 1000),
+
+                            c.getString("short_name")));
+                }
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return json;
+        }
+
+
+        @Override
+        protected void onPostExecute(String strFromDoInBg) {
+            progressDialog.dismiss();
+            ModGlobal.transType = "REFUND";
+            startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
+            finish();
+            Log.e("itemDetails", Integer.toString(ModGlobal.itemDetailsModelList.size()));
+
+        }
+
+
+    }
+
+    private void showReceiptEntry() {
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.app_register, null);
+        final EditText password = alertLayout.findViewById(R.id.et_password);
+        password.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(TableActivity.this);
+        alert.setIcon(TableActivity.this.getResources().getDrawable(R.drawable.baseline_autorenew_white_18));
+        alert.setTitle("Enter Receipt Number");
+        // this is set the view from XML inside AlertDialog
+        alert.setView(alertLayout);
+        // disallow cancel of AlertDialog on click of back button and outside touch
+        alert.setCancelable(false);
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                new RefundTransaction(TableActivity.this).execute(password.getText().toString());
+            }
+        });
+        AlertDialog dialog = alert.create();
+        dialog.show();
+    }
+
 
 }

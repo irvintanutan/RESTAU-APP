@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
         username.setText("xanderford");
         password.setText("xanderford");
+
+
     /*    username.setText("janedoe");
         password.setText("janedoe");*/
 
@@ -183,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
                 jsonObject.put("name", "IRVIN");
                 jsonArray.put(jsonObject);
                 ModGlobal.companyConfigModels.clear();
+                ModGlobal.tableModelList.clear();
+
 
 
                 JSONArray menuItems = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-products-api", WebRequest.GET));
@@ -316,8 +320,8 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.dismiss();
             if (strFromDoInBg.equals("1")) {
                 if (ModGlobal.userModelList.get(0).getUserType().equals("Staff")) {
-                    //startActivity(new Intent(MainActivity.this, TableActivity.class));
-                    startActivity(new Intent(MainActivity.this, CashierActivity.class));
+                    startActivity(new Intent(MainActivity.this, TableActivity.class));
+                    //startActivity(new Intent(MainActivity.this, CashierActivity.class));
                     finish();
                 } else if (ModGlobal.userModelList.get(0).getUserType().equals("Cashier")) {
                     startActivity(new Intent(MainActivity.this, CashierActivity.class));
