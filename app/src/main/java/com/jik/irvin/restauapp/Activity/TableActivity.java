@@ -769,7 +769,7 @@ public class TableActivity extends AppCompatActivity {
 
 
                 JSONObject jsonObject = refundTransaction.getJSONObject("details");
-
+                ModGlobal.orderType = jsonObject.getString("order_type");
                 ModGlobal.receiptNumber = jsonObject.getString("receipt_no");
 
                 JSONArray prodArr = refundTransaction.getJSONArray("products");

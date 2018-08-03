@@ -14,6 +14,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,6 +36,7 @@ import com.jik.irvin.restauapp.Model.ItemDetailsModel;
 import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
 import com.jik.irvin.restauapp.Model.TransactionModel;
+import com.jik.irvin.restauapp.Model.UserModel;
 import com.jik.irvin.restauapp.Services.MyService;
 import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
@@ -53,7 +55,7 @@ import java.util.List;
 public class CheckOutActivity extends AppCompatActivity {
 
     private CardView dineIn, cancel, takeOut, refund;
-    private TextView totalPrice , transactionId;
+    private TextView totalPrice, transactionId;
     private RecyclerView recyclerView;
     private RecyclerView recyclerViewTable;
     private ItemDetailsAdapter itemDetailsAdapter;
@@ -61,9 +63,11 @@ public class CheckOutActivity extends AppCompatActivity {
     DatabaseHelper databaseHelper = new DatabaseHelper(this);
     boolean warning = false;
     private String orderType = "";
+    private UserModel userModel = null;
 
 
     private boolean isExist = false;
+    private double finalTotal = 0.00;
     private int itemDetailsIndex = 0, itemDetailsQty = 1;
 
     @Override
@@ -85,13 +89,12 @@ public class CheckOutActivity extends AppCompatActivity {
         recyclerViewTable = findViewById(R.id.recycler_view_table_list);
 
 
-
-        if (ModGlobal.transType.equals("REFUND")){
+        if (ModGlobal.transType.equals("REFUND")) {
             cancel.setVisibility(View.VISIBLE);
             refund.setVisibility(View.VISIBLE);
             dineIn.setVisibility(View.GONE);
             takeOut.setVisibility(View.GONE);
-        }else {
+        } else {
             cancel.setVisibility(View.VISIBLE);
             refund.setVisibility(View.GONE);
             dineIn.setVisibility(View.VISIBLE);
@@ -123,10 +126,10 @@ public class CheckOutActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         // Do nothing but close the dialog
                         // Do nothing
-                        orderType =  "DINE-IN";
+                        orderType = "DINE-IN";
                         if (ModGlobal.transType.equals("NORMAL")) {
                             new Sync(CheckOutActivity.this).execute("DINE-IN");
-                        }else {
+                        } else {
                             new VerifyTransactionDetails(CheckOutActivity.this).execute("");
                         }
                     }
@@ -203,10 +206,10 @@ public class CheckOutActivity extends AppCompatActivity {
                         // Do nothing but close the dialog
                         // Do nothing
                         ModGlobal.tableId.clear();
-                        orderType =  "TAKE-OUT";
+                        orderType = "TAKE-OUT";
                         if (ModGlobal.transType.equals("NORMAL")) {
                             new Sync(CheckOutActivity.this).execute("TAKE-OUT");
-                        }else {
+                        } else {
                             new VerifyTransactionDetails(CheckOutActivity.this).execute("");
                         }
 
@@ -232,6 +235,8 @@ public class CheckOutActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                showAuthenticationEntry();
+
             }
         });
 
@@ -250,7 +255,7 @@ public class CheckOutActivity extends AppCompatActivity {
                 if (ModGlobal.isBillOutPrinted == 0) {
                     MenuModel menu = ModGlobal.menuModelList.get(ModGlobal.itemDetailsModelList.get(position).getPosition());
                     PopUpMenu(menu);
-                }else{
+                } else {
                     LayoutInflater inflater = getLayoutInflater();
                     View alertLayout = inflater.inflate(R.layout.app_register, null);
                     final EditText password = alertLayout.findViewById(R.id.et_password);
@@ -282,7 +287,7 @@ public class CheckOutActivity extends AppCompatActivity {
                                 MenuModel menu = ModGlobal.menuModelList.get(ModGlobal.itemDetailsModelList.get(position).getPosition());
                                 PopUpMenu(menu);
 
-                            } else{
+                            } else {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
 
                                 builder.setTitle("WARNING");
@@ -343,7 +348,7 @@ public class CheckOutActivity extends AppCompatActivity {
                                 ModGlobal.itemDetailsModelList.remove(position);
                                 itemDetailsAdapter.notifyDataSetChanged();
                                 computeTotal();
-                            }else {
+                            } else {
                                 LayoutInflater inflater = getLayoutInflater();
                                 View alertLayout = inflater.inflate(R.layout.app_register, null);
                                 final EditText password = alertLayout.findViewById(R.id.et_password);
@@ -376,7 +381,7 @@ public class CheckOutActivity extends AppCompatActivity {
                                             itemDetailsAdapter.notifyDataSetChanged();
                                             computeTotal();
 
-                                        } else{
+                                        } else {
                                             AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
 
                                             builder.setTitle("WARNING");
@@ -428,27 +433,31 @@ public class CheckOutActivity extends AppCompatActivity {
         recyclerViewTable.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                try {
-                    TableModel table = ModGlobal.tableModelList.get(position);
-                    if (table.getStatus().equals("Occupied") || table.getStatus().equals("Unavailable") ||
-                            table.getStatus().equals("Reserved"))
-                        Toast.makeText(getApplicationContext(), table.getName() + " is " + table.getStatus(), Toast.LENGTH_SHORT).show();
-                    else {
-                        if (table.getStatus().equals("Available")) {
-                            table.setStatus("Selected");
-                            addTable(Integer.parseInt(table.getTableId()));
-                            ModGlobal.tableAdapter.notifyDataSetChanged();
-                        } else {
-                            table.setStatus("Available");
-                            removeTable(Integer.parseInt(table.getTableId()));
-                            ModGlobal.tableAdapter.notifyDataSetChanged();
+
+                if (ModGlobal.transType.equals("REFUND")) {
+
+                    try {
+                        TableModel table = ModGlobal.tableModelList.get(position);
+                        if (table.getStatus().equals("Occupied") || table.getStatus().equals("Unavailable") ||
+                                table.getStatus().equals("Reserved"))
+                            Toast.makeText(getApplicationContext(), table.getName() + " is " + table.getStatus(), Toast.LENGTH_SHORT).show();
+                        else {
+                            if (table.getStatus().equals("Available")) {
+                                table.setStatus("Selected");
+                                addTable(Integer.parseInt(table.getTableId()));
+                                ModGlobal.tableAdapter.notifyDataSetChanged();
+                            } else {
+                                table.setStatus("Available");
+                                removeTable(Integer.parseInt(table.getTableId()));
+                                ModGlobal.tableAdapter.notifyDataSetChanged();
+                            }
                         }
+
+
+                        Log.e("asd", ModGlobal.tableId.toString());
+                    } catch (Exception e) {
+                        Log.e("asd", "something went wrong");
                     }
-
-
-                    Log.e("asd" , ModGlobal.tableId.toString());
-                } catch (Exception e) {
-                    Log.e("asd", "something went wrong");
                 }
 
             }
@@ -463,9 +472,9 @@ public class CheckOutActivity extends AppCompatActivity {
 
         computeTotal();
 
-        if (ModGlobal.transType.equals("REFUND")){
+        if (ModGlobal.transType.equals("REFUND")) {
 
-            transactionId.setText("REFUND (receipt # : (" + ModGlobal.receiptNumber  + ")");
+            transactionId.setText("REFUND receipt # : (" + ModGlobal.receiptNumber + ")");
 
         } else {
 
@@ -500,9 +509,13 @@ public class CheckOutActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == android.R.id.home) {
-            startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
-            finish();
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            if (!ModGlobal.transType.equals("REFUND")) {
+
+                startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
+                finish();
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -510,11 +523,14 @@ public class CheckOutActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        stopService(new Intent(CheckOutActivity.this, MyService.class));
-        startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
-        finish();
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        if (!ModGlobal.transType.equals("REFUND")) {
 
+            stopService(new Intent(CheckOutActivity.this, MyService.class));
+            startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
+            finish();
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+        }
     }
 
 
@@ -619,8 +635,8 @@ public class CheckOutActivity extends AppCompatActivity {
 
         dialog.show();
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.width = (int)this.getResources().getDimension(R.dimen.width);
-        lp.height = (int)this.getResources().getDimension(R.dimen.height);
+        lp.width = (int) this.getResources().getDimension(R.dimen.width);
+        lp.height = (int) this.getResources().getDimension(R.dimen.height);
 
         dialog.getWindow().setAttributes(lp);
         //dialog.getWindow().setLayout(800, 400);
@@ -642,7 +658,7 @@ public class CheckOutActivity extends AppCompatActivity {
 
         }
 
-
+        finalTotal = total;
         totalPrice.setText("total price : Php " + dec.format(total));
 
     }
@@ -851,7 +867,6 @@ public class CheckOutActivity extends AppCompatActivity {
     }
 
 
-
     class VerifyTransactionDetails extends AsyncTask<String, String, String> {
 
         Context serviceContext;
@@ -892,12 +907,11 @@ public class CheckOutActivity extends AppCompatActivity {
                 for (int i = 0; i < menuItems.length(); i++) {
                     JSONObject c = menuItems.getJSONObject(i);
 
-                      if (ModGlobal.transactionId.equals(c.getString("trans_id"))){
-                                json = "1";
-                                break;
-                      }
+                    if (ModGlobal.transactionId.equals(c.getString("trans_id"))) {
+                        json = "1";
+                        break;
+                    }
                 }
-
 
 
             } catch (JSONException e) {
@@ -912,38 +926,38 @@ public class CheckOutActivity extends AppCompatActivity {
         protected void onPostExecute(String strFromDoInBg) {
             progressDialog.dismiss();
 
-                if (strFromDoInBg.equals("1")){
-                    new SyncUpdate(CheckOutActivity.this).execute(orderType);
-                }else {
+            if (strFromDoInBg.equals("1")) {
+                new SyncUpdate(CheckOutActivity.this).execute(orderType);
+            } else {
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
 
-                    builder.setTitle("WARNING");
-                    builder.setMessage("Transaction ID  " + ModGlobal.transactionId + " is already been cleared. This transaction will be cancelled");
+                builder.setTitle("WARNING");
+                builder.setMessage("Transaction ID  " + ModGlobal.transactionId + " is already been cleared. This transaction will be cancelled");
 
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Do nothing but close the dialog
-                            // Do nothing
-                            ModGlobal.itemDetailsModelList.clear();
-                            ModGlobal.tableId.clear();
-                            ModGlobal.transactionId = "";
-                            ModGlobal.transType = "NORMAL";
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        // Do nothing
+                        ModGlobal.itemDetailsModelList.clear();
+                        ModGlobal.tableId.clear();
+                        ModGlobal.transactionId = "";
+                        ModGlobal.transType = "NORMAL";
 
-                            startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
-                            finish();
+                        startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
+                        finish();
 
-                        }
+                    }
 
-                    });
+                });
 
 
-                    AlertDialog alert = builder.create();
-                    alert.setCancelable(false);
-                    alert.show();
+                AlertDialog alert = builder.create();
+                alert.setCancelable(false);
+                alert.show();
 
-                }
+            }
         }
 
 
@@ -986,8 +1000,9 @@ public class CheckOutActivity extends AppCompatActivity {
                 JSONArray detailsArray = new JSONArray();
                 JSONObject detailsObject = new JSONObject();
                 detailsObject.put("order_type", params[0]);
-
+                detailsObject.put("user_id", ModGlobal.userModel.getUserId());
                 detailsObject.put("status", "ONGOING");
+
 
                 detailsArray.put(detailsObject);
 
@@ -1073,6 +1088,7 @@ public class CheckOutActivity extends AppCompatActivity {
                 ModGlobal.transactionId = "";
                 ModGlobal.tableId.clear();
                 ModGlobal.isBillOutPrinted = 0;
+                ModGlobal.transType = "NORMAL";
                 //ModGlobal.clear();
                 updateTable("CHECKOUT");
                 AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);
@@ -1121,9 +1137,325 @@ public class CheckOutActivity extends AppCompatActivity {
             }
 
         }
-
-
     }
 
+    class SyncRefund extends AsyncTask<String, String, String> {
+
+        Context serviceContext;
+        WebRequest wr = new WebRequest();
+        ProgressDialog progressDialog;
+
+
+        public SyncRefund(Context context) {
+            this.serviceContext = context;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(serviceContext);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle("PLEASE WAIT");
+            progressDialog.setMessage("Processing Refund for " + ModGlobal.receiptNumber);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            String json = "";
+            try {
+
+                JSONObject mainJsonObject = new JSONObject();
+                JSONArray mainJsonArray = new JSONArray();
+
+                JSONArray detailsArray = new JSONArray();
+                JSONObject detailsObject = new JSONObject();
+                detailsObject.put("order_type", ModGlobal.orderType);
+                detailsObject.put("user_id", ModGlobal.userModel.getUserId());
+                detailsObject.put("cashier_id", params[0]);
+                detailsObject.put("receipt_no", ModGlobal.receiptNumber);
+                detailsObject.put("cash_amt", finalTotal);
+
+                detailsArray.put(detailsObject);
+
+
+                mainJsonObject.put("details", detailsArray);
+
+
+                JSONArray packageArray = new JSONArray();
+                JSONArray productsArray = new JSONArray();
+
+                List<ItemDetailsModel> itemDetailsModels = ModGlobal.itemDetailsModelList;
+
+
+                for (ItemDetailsModel itemDetailsModel : itemDetailsModels) {
+                    JSONObject packageObject = new JSONObject();
+                    JSONObject productsObject = new JSONObject();
+                    if (itemDetailsModel.getCatID().equals("200")) {
+
+                        packageObject.put("pack_id", itemDetailsModel.getProdID() - 1000);
+                        packageObject.put("qty", itemDetailsModel.getMenuQty());
+                        packageArray.put(packageObject);
+
+                    } else {
+
+                        productsObject.put("prod_id", itemDetailsModel.getProdID());
+                        productsObject.put("qty", itemDetailsModel.getMenuQty());
+                        productsArray.put(productsObject);
+
+                    }
+
+                }
+
+                mainJsonObject.put("products", productsArray);
+                mainJsonObject.put("packages", packageArray);
+
+
+                mainJsonArray.put(mainJsonObject);
+                String load = mainJsonArray.toString();
+                Log.e("asd", load);
+
+                String response = WebRequest.makePostRequest(databaseHelper.getBaseUrl() + "add-transactions-refund-api/",
+                        load, serviceContext);
+
+
+                Log.e("response", response);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                warning = true;
+                Log.e("asd", e.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return json;
+        }
+
+
+        @Override
+        protected void onPostExecute(String strFromDoInBg) {
+            progressDialog.dismiss();
+
+
+            if (!warning) {
+                ModGlobal.itemDetailsModelList.clear();
+                ModGlobal.transactionId = "";
+                ModGlobal.tableId.clear();
+                ModGlobal.isBillOutPrinted = 0;
+                ModGlobal.receiptNumber = "";
+                ModGlobal.transType = "NORMAL";
+
+
+                //ModGlobal.clear();
+                updateTable("CHECKOUT");
+                AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);
+
+                builder.setTitle("Information");
+                builder.setMessage("Transaction Successful!");
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        // Do nothing
+
+                        startActivity(new Intent(CheckOutActivity.this, TableActivity.class));
+                        finish();
+                        dialog.dismiss();
+
+                    }
+
+                });
+
+                AlertDialog alert = builder.create();
+                alert.setCancelable(false);
+                alert.show();
+
+            } else {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);
+
+                builder.setTitle("WARNING");
+                builder.setMessage("Can't access server");
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        // Do nothing
+                        dialog.dismiss();
+
+                    }
+
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+
+        }
+    }
+
+
+    private void showAuthenticationEntry() {
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.user_refund_verification, null);
+
+        final EditText password = alertLayout.findViewById(R.id.et_password);
+        final EditText username = alertLayout.findViewById(R.id.et_username);
+
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(CheckOutActivity.this);
+        alert.setIcon(CheckOutActivity.this.getResources().getDrawable(R.drawable.ic_fingerprint_black_24dp));
+        alert.setTitle("User Authentication");
+        // this is set the view from XML inside AlertDialog
+        alert.setView(alertLayout);
+        // disallow cancel of AlertDialog on click of back button and outside touch
+        alert.setCancelable(false);
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                new VerifyUser(CheckOutActivity.this).execute(username.getText().toString(), password.getText().toString());
+            }
+        });
+        AlertDialog dialog = alert.create();
+        dialog.show();
+    }
+
+
+    class VerifyUser extends AsyncTask<String, String, String> {
+        WebRequest wr = new WebRequest();
+        private Context context;
+        ProgressDialog progressDialog;
+
+        public VerifyUser(Context c) {
+            this.context = c;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle("Please wait");
+            progressDialog.setMessage("Verifying User Credentials");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            String json = "0";
+            try {
+                Log.e("url", databaseHelper.getBaseUrl());
+
+                JSONArray users = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-users-api", WebRequest.GET));
+
+
+                for (int i = 0; i < users.length(); i++) {
+                    JSONObject c = users.getJSONObject(i);
+
+                    if (c.getString("username").equals(params[0]) && c.getString("password").equals(params[1])) {
+                        json = "1";
+
+                      userModel = new UserModel(c.getString("user_id"),
+                                c.getString("user_type"), c.getString("username"),
+                                c.getString("password"), c.getString("lastname"),
+                                c.getString("firstname"), c.getString("middlename"));
+
+                        break;
+                    }
+
+                }
+
+
+            } catch (JSONException e) {
+                progressDialog.dismiss();
+                e.printStackTrace();
+                Log.e("error on downloading", e.toString());
+            }
+
+            return json;
+        }
+
+
+        @Override
+        protected void onPostExecute(String strFromDoInBg) {
+            super.onPostExecute("");
+
+            try {
+
+                progressDialog.dismiss();
+                if (strFromDoInBg.equals("1")) {
+
+
+                    if (userModel.getUserType().equals("Administrator") ||
+                            userModel.getUserType().equals("Cashier")) {
+
+                        new SyncRefund(CheckOutActivity.this).execute(userModel.getUserId());
+
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
+
+                        builder.setTitle("Warning");
+                        builder.setMessage("Unauthorized User");
+
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Do nothing but close the dialog
+                                // Do nothing
+                                dialog.dismiss();
+
+                            }
+                        });
+
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CheckOutActivity.this);
+
+                    builder.setTitle("Warning");
+                    builder.setMessage("Unauthorized User");
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            dialog.dismiss();
+
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.e("refund", e.toString());
+            }
+        }
+    }
 
 }

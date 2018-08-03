@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ModGlobal {
 
-    public static String baseURL = "http://192.168.99.111/~jik/RESTAU-APP-BACKEND/resto-app/";
+    public static String baseURL = "http://192.168.88.27/RESTAU-APP-BACKEND/resto-app/";
     //public static String baseURL = "http://192.168.99.111/~jik/RESTAU-APP-BACKEND/resto-app/";
     public static List<MenuModel> menuModelList = new ArrayList<>();
     public static List<MenuModel> menuModelListCopy = new ArrayList<>();
@@ -30,6 +30,8 @@ public class ModGlobal {
     public static List<UserModel> userModelList = new ArrayList<>();
     public static List<DiscountModel> discountModelList = new ArrayList<>();
     public static String receiptNumber = "";
+    public static String orderType = "";
+
 
     public static UserModel userModel = null;
 
