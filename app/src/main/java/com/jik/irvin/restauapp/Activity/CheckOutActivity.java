@@ -37,6 +37,7 @@ import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
 import com.jik.irvin.restauapp.Model.TransactionModel;
 import com.jik.irvin.restauapp.Model.UserModel;
+import com.jik.irvin.restauapp.Services.AuditTrailService;
 import com.jik.irvin.restauapp.Services.MyService;
 import com.jik.irvin.restauapp.R;
 import com.jik.irvin.restauapp.Constants.RecyclerTouchListener;
@@ -344,6 +345,9 @@ public class CheckOutActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             // Do nothing but close the dialog
                             // Do nothing
+
+                            final ItemDetailsModel im = ModGlobal.itemDetailsModelList.get(position);
+
                             if (ModGlobal.isBillOutPrinted == 0) {
                                 ModGlobal.itemDetailsModelList.remove(position);
                                 itemDetailsAdapter.notifyDataSetChanged();
@@ -404,6 +408,21 @@ public class CheckOutActivity extends AppCompatActivity {
                                 });
                                 AlertDialog dialog1 = alert.create();
                                 dialog1.show();
+                            }
+
+                            if (ModGlobal.transType.equals("UPDATE")) {
+
+                                String product = "";
+
+                                if (im.getCatID().equals("200")){
+                                    product = "Package: G" + (im.getProdID() - 1000);
+                                }else {
+                                    product = "Product: P" + im.getProdID();
+                                }
+
+                                new AuditTrailService(CheckOutActivity.this).execute(ModGlobal.userModel.getUsername(), "Void",
+                                        "Item void S" + ModGlobal.transactionId + " by U" + ModGlobal.userModel.getUserId() + " - " +
+                                                product);
                             }
 
                         }

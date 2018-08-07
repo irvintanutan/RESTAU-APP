@@ -67,9 +67,9 @@ public class MainActivity extends AppCompatActivity {
         password.setText("xanderford");
 
 
-    /*    username.setText("janedoe");
-        password.setText("janedoe");*/
-
+     /*   username.setText("janedoe");
+        password.setText("janedoe");
+*/
         /*login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
