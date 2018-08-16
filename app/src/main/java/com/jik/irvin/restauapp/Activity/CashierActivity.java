@@ -508,37 +508,47 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         final Spinner spinner = alertLayout.findViewById(R.id.spinner);
 
         List<DiscountModel> discountModels = ModGlobal.discountModelList;
-        final String[] values = new String[discountModels.size()];
-        int [] discountId = new int[discountModels.size()];
-        int counter = 0;
-        for ( DiscountModel discountModel : discountModels){
+        ArrayList<String> values = new ArrayList<>();
+        ArrayList<Integer> discountId = new ArrayList<>();
 
-            values[counter] = discountModel.getDesc();
-            discountId[counter] = discountModel.getDiscId();
+        for (DiscountModel discountModel : discountModels) {
+
+            values.add(discountModel.getDesc());
+            discountId.add(discountModel.getDiscId());
 
         }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
 
-        spinner.setAdapter(new ArrayAdapter<>(CashierActivity.this, android.R.layout.simple_list_item_1, values));
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
-                int index = arg0.getSelectedItemPosition();
-                Toast.makeText(getBaseContext(),
-                        "You have selected item : " + values[index],
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
-        });
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         // this is set the view from XML inside AlertDialog
+        // this is set the view from XML inside AlertDialog
         alert.setView(alertLayout);
         // disallow cancel of AlertDialog on click of back button and outside touch
+        alert.setCancelable(false);
 
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+
+                dialog.dismiss();
+            }
+        });
+
+        alert.setPositiveButton("Apply Discount", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+
+                dialog.dismiss();
+            }
+
+        });
 
         finalDialog = alert.create();
         finalDialog.show();
@@ -1222,7 +1232,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         String companyName = wordwrap(c.getName(), 15);
         String companyAddress = wordwrap(c.getAddress(), 25);
         String companyTin = wordwrap(c.getTin(), 25);
-        String companyCity = wordwrap(c.getCity() , 25);
+        String companyCity = wordwrap(c.getCity(), 25);
 
 
         if (mPrinter == null) {
@@ -1347,25 +1357,25 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
-            mPrinter.addTextStyle(Printer.FALSE , Printer.FALSE , Printer.FALSE , Printer.COLOR_1);
+            mPrinter.addTextStyle(Printer.FALSE, Printer.FALSE, Printer.FALSE, Printer.COLOR_1);
             textData.append("===================================\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
-            mPrinter.addTextStyle(Printer.FALSE , Printer.FALSE , Printer.TRUE , Printer.COLOR_1);
+            mPrinter.addTextStyle(Printer.FALSE, Printer.FALSE, Printer.TRUE, Printer.COLOR_1);
             double vat = finalTotal * .12;
-            textData.append("Total Sales" + padding(35 - (11 + dec.format(finalTotal - vat).length())) + dec.format(finalTotal - vat) +  "\n");
+            textData.append("Total Sales" + padding(35 - (11 + dec.format(finalTotal - vat).length())) + dec.format(finalTotal - vat) + "\n");
 
-            textData.append("Vat" + padding(35 - (3 + dec.format(vat).length())) + dec.format(vat) +  "\n");
-            textData.append(padding(35 - 10) + "==========" +  "\n");
-            textData.append("Amount Due" + padding(35 - (10 + dec.format(finalTotal).length())) + dec.format(finalTotal) +  "\n");
-            textData.append("Cash" + padding(35 - (4 + dec.format(finalCash).length())) + dec.format(finalCash) +  "\n");
-            textData.append("Change" + padding(35 - (6 + dec.format(finalChange).length())) + dec.format(finalChange) +  "\n\n");
+            textData.append("Vat" + padding(35 - (3 + dec.format(vat).length())) + dec.format(vat) + "\n");
+            textData.append(padding(35 - 10) + "==========" + "\n");
+            textData.append("Amount Due" + padding(35 - (10 + dec.format(finalTotal).length())) + dec.format(finalTotal) + "\n");
+            textData.append("Cash" + padding(35 - (4 + dec.format(finalCash).length())) + dec.format(finalCash) + "\n");
+            textData.append("Change" + padding(35 - (6 + dec.format(finalChange).length())) + dec.format(finalChange) + "\n\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
 
-            mPrinter.addTextStyle(Printer.FALSE , Printer.FALSE , Printer.FALSE , Printer.COLOR_1);
+            mPrinter.addTextStyle(Printer.FALSE, Printer.FALSE, Printer.FALSE, Printer.COLOR_1);
             mPrinter.addTextAlign(Printer.ALIGN_CENTER);
             String pattern = "EEE, dd MMMM yyyy hh:mm aaa";
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -1376,7 +1386,6 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
-
 
 
             mPrinter.addFeedLine(1);

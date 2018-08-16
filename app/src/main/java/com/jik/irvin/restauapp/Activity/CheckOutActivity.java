@@ -453,7 +453,7 @@ public class CheckOutActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
 
-                if (ModGlobal.transType.equals("REFUND")) {
+                if (!ModGlobal.transType.equals("REFUND")) {
 
                     try {
                         TableModel table = ModGlobal.tableModelList.get(position);

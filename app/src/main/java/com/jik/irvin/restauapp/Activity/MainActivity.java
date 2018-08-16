@@ -62,24 +62,13 @@ public class MainActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
 
+        username.setText("janedoe");
+        password.setText("janedoe");
 
         username.setText("xanderford");
         password.setText("xanderford");
 
 
-     /*   username.setText("janedoe");
-        password.setText("janedoe");
-*/
-        /*login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-
-                new SignInRequest(MainActivity.this).execute("");
-
-            }
-        });*/
 
 
         login.setOnTouchListener(new View.OnTouchListener() {
