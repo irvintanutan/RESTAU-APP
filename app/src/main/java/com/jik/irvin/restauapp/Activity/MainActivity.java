@@ -11,6 +11,7 @@ import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     final EditText password = alertLayout.findViewById(R.id.et_password);
 
 
+
                     AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
                     alert.setIcon(MainActivity.this.getResources().getDrawable(R.drawable.ic_fingerprint_black_24dp));
                     alert.setTitle("Enter Password");
@@ -111,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             String pass = password.getText().toString();
 
-                            if (pass.equals("")) {
+                            if (pass.equals("1223334444")) {
                                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                                 startActivity(intent);
                                 finish();

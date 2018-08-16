@@ -260,11 +260,11 @@ public class CheckOutActivity extends AppCompatActivity {
                     LayoutInflater inflater = getLayoutInflater();
                     View alertLayout = inflater.inflate(R.layout.app_register, null);
                     final EditText password = alertLayout.findViewById(R.id.et_password);
-
+                    password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
                     AlertDialog.Builder alert = new AlertDialog.Builder(CheckOutActivity.this);
                     alert.setIcon(CheckOutActivity.this.getResources().getDrawable(R.drawable.ic_fingerprint_black_24dp));
-                    alert.setTitle("Enter Password");
+                    alert.setTitle("Enter Master Pin");
                     // this is set the view from XML inside AlertDialog
                     alert.setView(alertLayout);
                     // disallow cancel of AlertDialog on click of back button and outside touch
@@ -360,7 +360,7 @@ public class CheckOutActivity extends AppCompatActivity {
 
                                 AlertDialog.Builder alert = new AlertDialog.Builder(CheckOutActivity.this);
                                 alert.setIcon(CheckOutActivity.this.getResources().getDrawable(R.drawable.ic_fingerprint_black_24dp));
-                                alert.setTitle("Enter Password");
+                                alert.setTitle("Enter Master Pin");
                                 // this is set the view from XML inside AlertDialog
                                 alert.setView(alertLayout);
                                 // disallow cancel of AlertDialog on click of back button and outside touch
@@ -414,9 +414,9 @@ public class CheckOutActivity extends AppCompatActivity {
 
                                 String product = "";
 
-                                if (im.getCatID().equals("200")){
+                                if (im.getCatID().equals("200")) {
                                     product = "Package: G" + (im.getProdID() - 1000);
-                                }else {
+                                } else {
                                     product = "Product: P" + im.getProdID();
                                 }
 
@@ -603,9 +603,11 @@ public class CheckOutActivity extends AppCompatActivity {
         plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int qty = Integer.parseInt(quantity.getText().toString());
-                qty++;
-                quantity.setText(Integer.toString(qty));
+                if (!ModGlobal.transType.equals("REFUND")) {
+                    int qty = Integer.parseInt(quantity.getText().toString());
+                    qty++;
+                    quantity.setText(Integer.toString(qty));
+                }
             }
         });
 
@@ -1395,7 +1397,7 @@ public class CheckOutActivity extends AppCompatActivity {
                     if (c.getString("username").equals(params[0]) && c.getString("password").equals(params[1])) {
                         json = "1";
 
-                      userModel = new UserModel(c.getString("user_id"),
+                        userModel = new UserModel(c.getString("user_id"),
                                 c.getString("user_type"), c.getString("username"),
                                 c.getString("password"), c.getString("lastname"),
                                 c.getString("firstname"), c.getString("middlename"));
@@ -1470,7 +1472,7 @@ public class CheckOutActivity extends AppCompatActivity {
                     AlertDialog alert = builder.create();
                     alert.show();
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 Log.e("refund", e.toString());
             }
