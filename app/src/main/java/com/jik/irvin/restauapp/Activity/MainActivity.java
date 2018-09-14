@@ -69,9 +69,6 @@ public class MainActivity extends AppCompatActivity {
         username.setText("xanderford");
         password.setText("xanderford");
 
-
-
-
         login.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -136,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
                 Settings.Secure.ANDROID_ID);
 
         databaseHelper.addPos(new PosModel("2", "2000000", androidId));
-
 
     }
 
@@ -355,23 +351,48 @@ public class MainActivity extends AppCompatActivity {
 
                 ModGlobal.userModelList.clear();
                 ModGlobal.userModel = null;
-                JSONArray users = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-users-api", WebRequest.GET));
+
+                boolean ind = false;
+                PosModel posModel = databaseHelper.getAllSettings().get(0);
 
 
-                for (int i = 0; i < users.length(); i++) {
-                    JSONObject c = users.getJSONObject(i);
+                JSONArray pos = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-pos-api", WebRequest.GET));
+                String androidId = Settings.Secure.getString(getContentResolver(),
+                        Settings.Secure.ANDROID_ID);
 
-                    if (c.getString("username").equals(params[0]) && c.getString("password").equals(params[1])) {
-                        json = "1";
 
-                        ModGlobal.userModelList.add(new UserModel(c.getString("user_id"),
-                                c.getString("user_type"), c.getString("username"),
-                                c.getString("password"), c.getString("lastname"),
-                                c.getString("firstname"), c.getString("middlename")));
+                for (int i = 0; i < pos.length(); i++) {
+                    JSONObject c = pos.getJSONObject(i);
 
-                        break;
+
+                    if (posModel.getPos_id().equals(c.getString("pos_id")) && androidId.equals(c.getString("hardware_id")) &&
+                             c.getString("activated").equals("1")){
+                        ind = true;
                     }
 
+                }
+
+                if (ind) {
+
+                    JSONArray users = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-users-api", WebRequest.GET));
+
+                    for (int i = 0; i < users.length(); i++) {
+                        JSONObject c = users.getJSONObject(i);
+
+                        if (c.getString("username").equals(params[0]) && c.getString("password").equals(params[1])) {
+                            json = "1";
+
+                            ModGlobal.userModelList.add(new UserModel(c.getString("user_id"),
+                                    c.getString("user_type"), c.getString("username"),
+                                    c.getString("password"), c.getString("lastname"),
+                                    c.getString("firstname"), c.getString("middlename")));
+
+                            break;
+                        }
+
+                    }
+                }else {
+                    json = "2";
                 }
 
 
@@ -394,23 +415,48 @@ public class MainActivity extends AppCompatActivity {
                 new SignInRequest(MainActivity.this).execute("");
 
             }else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-                builder.setTitle("Warning");
-                builder.setMessage("Unauthorized User");
+                if (strFromDoInBg.equals("2")){
 
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing but close the dialog
-                        // Do nothing
-                        dialog.dismiss();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-                    }
-                });
+                    builder.setTitle("Warning");
+                    builder.setMessage("This device is not registered or deactivated. Please contact Software Provider");
 
-                AlertDialog alert = builder.create();
-                alert.show();
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            dialog.dismiss();
+
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                }else {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                    builder.setTitle("Warning");
+                    builder.setMessage("Unauthorized User");
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            dialog.dismiss();
+
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
             }
         }
     }

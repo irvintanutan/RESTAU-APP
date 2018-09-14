@@ -53,8 +53,6 @@ public class SettingsActivity extends AppCompatActivity {
         deviceKey.setText(androidId);
         receiptNumber.setText(posModel.getLast_receipt_number());
 
-
-
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

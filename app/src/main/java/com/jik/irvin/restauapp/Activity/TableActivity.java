@@ -164,29 +164,29 @@ public class TableActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                    if (!ModGlobal.itemDetailsModelList.isEmpty() || ModGlobal.transType.equals("REFUND")) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(TableActivity.this);
+                if (!ModGlobal.itemDetailsModelList.isEmpty() || ModGlobal.transType.equals("REFUND")) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(TableActivity.this);
 
-                        builder.setTitle("Warning");
-                        builder.setMessage("You cannot view previous transactions if there is a pending transaction currently. " +
-                                "Please cancel or complete the transaction first before doing this operation");
+                    builder.setTitle("Warning");
+                    builder.setMessage("You cannot view previous transactions if there is a pending transaction currently. " +
+                            "Please cancel or complete the transaction first before doing this operation");
 
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-                            public void onClick(DialogInterface dialog, int which) {
-                                // Do nothing but close the dialog
-                                // Do nothing
-                                startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
-                                finish();
-                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                            }
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
+                            finish();
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        }
 
-                        });
+                    });
 
-                        AlertDialog alert = builder.create();
-                        alert.show();
-                    } else
-                        new SyncTransaction(TableActivity.this).execute("");
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                } else
+                    new SyncTransaction(TableActivity.this).execute("");
 
             }
         });
@@ -780,7 +780,6 @@ public class TableActivity extends AppCompatActivity {
                 ModGlobal.isBillOutPrinted = 0;
 
 
-
                 for (int i = 0; i < prodArr.length(); i++) {
                     JSONObject c = prodArr.getJSONObject(i);
                     ModGlobal.itemDetailsModelList.add(new ItemDetailsModel(
@@ -793,7 +792,6 @@ public class TableActivity extends AppCompatActivity {
                             getPosition(c.getInt("prod_id")),
                             c.getString("short_name")));
                 }
-
 
 
                 for (int i = 0; i < packArr.length(); i++) {
@@ -822,10 +820,31 @@ public class TableActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String strFromDoInBg) {
             progressDialog.dismiss();
-            ModGlobal.transType = "REFUND";
-            startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
-            finish();
-            Log.e("itemDetails", Integer.toString(ModGlobal.itemDetailsModelList.size()));
+
+            if (ModGlobal.itemDetailsModelList.size() > 0) {
+                ModGlobal.transType = "REFUND";
+                startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
+                finish();
+                Log.e("itemDetails", Integer.toString(ModGlobal.itemDetailsModelList.size()));
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(TableActivity.this);
+                builder.setTitle("Warning");
+                builder.setMessage("No transaction found on this receipt # ");
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        // Do nothing
+
+                    }
+
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+
 
         }
 
