@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
+import com.jik.irvin.restauapp.Constants.MarshMallowPermission;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
 import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.CategoryModel;
@@ -52,6 +53,17 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
+
+        MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
+        if (!marshMallowPermission.checkPermissionForInternet()){
+            marshMallowPermission.requestPermissionForInternet();
+        }
+
+        if (!marshMallowPermission.checkPermissionForExternalStorage()){
+            marshMallowPermission.requestPermissionForExternalStorage();
+        }
+
+
         ModGlobal.menuModelList.clear();
         ModGlobal.categoryModelList.clear();
 
@@ -63,11 +75,11 @@ public class MainActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
 
-        username.setText("janedoe");
+/*        username.setText("janedoe");
         password.setText("janedoe");
 
         username.setText("xanderford");
-        password.setText("xanderford");
+        password.setText("xanderford");*/
 
         login.setOnTouchListener(new View.OnTouchListener() {
             @Override
