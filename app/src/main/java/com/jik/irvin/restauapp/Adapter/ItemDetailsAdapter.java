@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.ItemDetailsModel;
 import com.jik.irvin.restauapp.R;
 
@@ -24,6 +25,7 @@ public class ItemDetailsAdapter extends RecyclerView.Adapter<ItemDetailsAdapter.
 
     private Context mContext;
     private List<ItemDetailsModel> itemDetailsModels;
+    DatabaseHelper databaseHelper = null;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -45,6 +47,7 @@ public class ItemDetailsAdapter extends RecyclerView.Adapter<ItemDetailsAdapter.
     public ItemDetailsAdapter(Context mContext, List<ItemDetailsModel> itemDetailsModels) {
         this.mContext = mContext;
         this.itemDetailsModels = itemDetailsModels;
+        databaseHelper = new DatabaseHelper(mContext);
     }
 
     @Override
@@ -74,9 +77,9 @@ public class ItemDetailsAdapter extends RecyclerView.Adapter<ItemDetailsAdapter.
         }*/
 
         if (!itemDetailsModels.get(position).getCatID().equals("200")) {
-            Glide.with(mContext).load(ModGlobal.baseURL + "uploads/products/" + itemDetailsModels.get(position).getUrl()).into(holder.imageView);
+            Glide.with(mContext).load(databaseHelper.getBaseUrl() + "uploads/products/" + itemDetailsModels.get(position).getUrl()).into(holder.imageView);
         }else
-            Glide.with(mContext).load(ModGlobal.baseURL + "uploads/packages/" + itemDetailsModels.get(position).getUrl()).into(holder.imageView);
+            Glide.with(mContext).load(databaseHelper.getBaseUrl() + "uploads/packages/" + itemDetailsModels.get(position).getUrl()).into(holder.imageView);
 
     }
 

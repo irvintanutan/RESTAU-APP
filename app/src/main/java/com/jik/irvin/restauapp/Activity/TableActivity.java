@@ -238,7 +238,7 @@ public class TableActivity extends AppCompatActivity {
         }));
 
 
-        Glide.with(TableActivity.this).load(ModGlobal.baseURL + "assets/img/" + ModGlobal.companyConfigModels.get(0).getImg_comp()).into(logo);
+        Glide.with(TableActivity.this).load(databaseHelper.getBaseUrl() + "assets/img/" + ModGlobal.companyConfigModels.get(0).getImg_comp()).into(logo);
 
 
         filter("200");
@@ -264,9 +264,9 @@ public class TableActivity extends AppCompatActivity {
 
 
         if (!menuModel.getCat_id().equals("200")) {
-            Glide.with(TableActivity.this).load(ModGlobal.baseURL + "uploads/products/" + menuModel.getImg()).into(imageView);
+            Glide.with(TableActivity.this).load(databaseHelper.getBaseUrl() + "uploads/products/" + menuModel.getImg()).into(imageView);
         } else
-            Glide.with(TableActivity.this).load(ModGlobal.baseURL + "uploads/packages/" + menuModel.getImg()).into(imageView);
+            Glide.with(TableActivity.this).load(databaseHelper.getBaseUrl() + "uploads/packages/" + menuModel.getImg()).into(imageView);
 
         title.setText(menuModel.getName());
         price.setText("Php " + menuModel.getPrice());

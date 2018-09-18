@@ -566,9 +566,9 @@ public class CheckOutActivity extends AppCompatActivity {
 
 
         if (!menuModel.getCat_id().equals("200")) {
-            Glide.with(CheckOutActivity.this).load(ModGlobal.baseURL + "uploads/products/" + menuModel.getImg()).into(imageView);
+            Glide.with(CheckOutActivity.this).load(databaseHelper.getBaseUrl() + "uploads/products/" + menuModel.getImg()).into(imageView);
         } else
-            Glide.with(CheckOutActivity.this).load(ModGlobal.baseURL + "uploads/packages/" + menuModel.getImg()).into(imageView);
+            Glide.with(CheckOutActivity.this).load(databaseHelper.getBaseUrl() + "uploads/packages/" + menuModel.getImg()).into(imageView);
 
         title.setText(menuModel.getName());
         price.setText("Php " + menuModel.getPrice());

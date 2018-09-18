@@ -10,11 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.jik.irvin.restauapp.Constants.ModGlobal;
 import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.R;
-import com.koushikdutta.ion.Ion;
 
 import java.text.DecimalFormat;
 import java.util.List;
