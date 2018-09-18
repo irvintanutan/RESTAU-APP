@@ -11,8 +11,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.jik.irvin.restauapp.Constants.ModGlobal;
+import com.jik.irvin.restauapp.DatabaseHelper;
 import com.jik.irvin.restauapp.Model.MenuModel;
 import com.jik.irvin.restauapp.R;
+import com.koushikdutta.ion.Ion;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -25,6 +27,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MyViewHolder> 
 
     private Context mContext;
     private List<MenuModel> menuModels;
+    DatabaseHelper databaseHelper = null;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -46,6 +49,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MyViewHolder> 
     public MenuAdapter(Context mContext, List<MenuModel> menuModels) {
         this.mContext = mContext;
         this.menuModels = menuModels;
+        databaseHelper = new DatabaseHelper(mContext);
     }
 
     @Override
@@ -77,11 +81,10 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MyViewHolder> 
         else
             holder.discount.setText(null);
 
-
         if (!menuModels.get(position).getCat_id().equals("200")) {
-            Glide.with(mContext).load(ModGlobal.baseURL + "uploads/products/" + menuModels.get(position).getImg()).into(holder.imageView);
+            Glide.with(mContext).load(databaseHelper.getBaseUrl() + "uploads/products/" + menuModels.get(position).getImg()).into(holder.imageView);
         } else
-            Glide.with(mContext).load(ModGlobal.baseURL + "uploads/packages/" + menuModels.get(position).getImg()).into(holder.imageView);
+            Glide.with(mContext).load(databaseHelper.getBaseUrl() + "uploads/packages/" + menuModels.get(position).getImg()).into(holder.imageView);
 
 
     }

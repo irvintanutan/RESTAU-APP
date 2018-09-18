@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+
         MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
         if (!marshMallowPermission.checkPermissionForInternet()){
             marshMallowPermission.requestPermissionForInternet();
@@ -75,11 +76,11 @@ public class MainActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
 
-/*        username.setText("janedoe");
+        username.setText("janedoe");
         password.setText("janedoe");
 
         username.setText("xanderford");
-        password.setText("xanderford");*/
+        password.setText("xanderford");
 
         login.setOnTouchListener(new View.OnTouchListener() {
             @Override
