@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
             marshMallowPermission.requestPermissionForExternalStorage();
         }
 
-
         ModGlobal.menuModelList.clear();
         ModGlobal.categoryModelList.clear();
 
@@ -324,8 +323,25 @@ public class MainActivity extends AppCompatActivity {
                     //startActivity(new Intent(MainActivity.this, CashierActivity.class));
                     finish();
                 } else if (ModGlobal.userModelList.get(0).getUserType().equals("Cashier")) {
-                    startActivity(new Intent(MainActivity.this, CashierActivity.class));
-                    finish();
+                   /* startActivity(new Intent(MainActivity.this, CashierActivity.class));
+                    finish();*/
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                    builder.setTitle("Warning");
+                    builder.setMessage("Cashier is not allowed to use this feature ");
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            dialog.dismiss();
+
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
             }
         }

@@ -4,7 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -79,7 +82,25 @@ public class CheckOutActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
+
         setContentView(R.layout.activity_check_out);
+
+
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColors(new int[]{
+                Color.parseColor("#3F51B5"),
+                Color.parseColor("#42A5F5")
+        });
+
+        drawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        drawable.setOrientation(GradientDrawable.Orientation.LEFT_RIGHT);
 
         dineIn = findViewById(R.id.button);
         cancel = findViewById(R.id.cancel);
@@ -112,7 +133,7 @@ public class CheckOutActivity extends AppCompatActivity {
         ab.setTitle("BACK");
         ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
         ab.setDisplayShowTitleEnabled(true); // disable the default title element here (for centered title)
-
+        ab.setBackgroundDrawable(drawable);
 
         dineIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -506,6 +527,29 @@ public class CheckOutActivity extends AppCompatActivity {
         startService(new Intent(this, MyService.class));
     }
 
+
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            hideSystemUI();
+        }
+    }
+
+    private void hideSystemUI() {
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+// Set the content to appear under the system bars so that the
+// content doesn't resize when the system bars hide and show.
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+// Hide the nav bar and status bar
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+    }
 
     void addTable(int id) {
         ModGlobal.tableId.add(id);

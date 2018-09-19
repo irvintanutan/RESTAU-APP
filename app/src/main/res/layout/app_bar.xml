@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:elevation="@dimen/_3sdp"
-            app:cardBackgroundColor="#F44336"
+            app:cardBackgroundColor="#EF5350"
             app:cardCornerRadius="@dimen/card_album_radius">
 
             <LinearLayout
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:elevation="@dimen/_3sdp"
             android:layout_marginLeft="10dp"
-            app:cardBackgroundColor="#9C27B0"
+            app:cardBackgroundColor="#AB47BC"
             app:cardCornerRadius="@dimen/card_album_radius">
 
             <LinearLayout
@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:elevation="@dimen/_3sdp"
-            app:cardBackgroundColor="#E91E63"
+            app:cardBackgroundColor="#EC407A"
             app:cardCornerRadius="@dimen/card_album_radius">
 
             <LinearLayout
