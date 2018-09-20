@@ -50,6 +50,22 @@ public class ModGlobal {
     public static ArrayList<Integer> tableId = new ArrayList<>();
 
 
+    public static boolean isItemExist(int id){
+        boolean ind = false;
+
+
+        for (ItemDetailsModel itemDetailsModel : itemDetailsModelList){
+
+            if (itemDetailsModel.getProdID() == id){
+                ind = true;
+                break;
+            }
+
+        }
+
+        return ind;
+    }
+
     public static String getLessPrice(int prod_id){
 
         String less = "";

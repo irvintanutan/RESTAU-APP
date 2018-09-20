@@ -281,7 +281,6 @@ public class CheckOutActivity extends AppCompatActivity {
                     LayoutInflater inflater = getLayoutInflater();
                     View alertLayout = inflater.inflate(R.layout.app_register, null);
                     final EditText password = alertLayout.findViewById(R.id.et_password);
-                    password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
                     AlertDialog.Builder alert = new AlertDialog.Builder(CheckOutActivity.this);
                     alert.setIcon(CheckOutActivity.this.getResources().getDrawable(R.drawable.ic_fingerprint_black_24dp));

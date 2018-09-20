@@ -75,11 +75,13 @@ public class MainActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
 
+/*
         username.setText("janedoe");
         password.setText("janedoe");
 
         username.setText("xanderford");
         password.setText("xanderford");
+*/
 
         login.setOnTouchListener(new View.OnTouchListener() {
             @Override

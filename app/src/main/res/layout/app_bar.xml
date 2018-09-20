@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|center_vertical"
                     android:layout_margin="@dimen/_7sdp"
-                    android:text="VIEW ORDERS LIST"
+                    android:text="VIEW ORDER LIST"
                     android:textSize="@dimen/_7ssp"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold" />

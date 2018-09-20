@@ -248,6 +248,27 @@ public class TableActivity extends AppCompatActivity {
 
                 MenuModel menuModel = ModGlobal.menuModelListCopy.get(position);
 
+                if (ModGlobal.isItemExist(menuModel.getProd_id()) && ModGlobal.transType != "NORMAL"){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(TableActivity.this);
+
+                    builder.setTitle("Warning");
+                    builder.setMessage(menuModel.getName() + " already exist in the cart. Please go to ORDERS LIST screen to alter this product");
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
+                            finish();
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        }
+
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }else
                 PopUpMenu(menuModel);
 
 
@@ -661,9 +682,44 @@ public class TableActivity extends AppCompatActivity {
             }
         });
 
+        alert.setNegativeButton("Refund Transaction", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                if (!ModGlobal.itemDetailsModelList.isEmpty()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(TableActivity.this);
+
+                    builder.setTitle("Warning");
+                    builder.setMessage("You cannot view previous transactions if there is a pending transaction currently. " +
+                            "Please cancel or complete the transaction first before doing this operation");
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            // Do nothing
+                            startActivity(new Intent(TableActivity.this, CheckOutActivity.class));
+                            finish();
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        }
+
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                } else
+                    showReceiptEntry();
+
+                dialog.dismiss();
+
+            }
+        });
+
         AlertDialog dialog = alert.create();
 
         dialog.show();
+
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.width = (int) this.getResources().getDimension(R.dimen.width_transaction);
         lp.height = (int) this.getResources().getDimension(R.dimen.height);
@@ -921,7 +977,7 @@ public class TableActivity extends AppCompatActivity {
 
     private void showReceiptEntry() {
         LayoutInflater inflater = getLayoutInflater();
-        View alertLayout = inflater.inflate(R.layout.app_register, null);
+        View alertLayout = inflater.inflate(R.layout.app_receipt, null);
         final EditText password = alertLayout.findViewById(R.id.et_password);
         password.setInputType(InputType.TYPE_CLASS_NUMBER);
 
