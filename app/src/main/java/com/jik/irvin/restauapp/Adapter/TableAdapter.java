@@ -64,6 +64,8 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.MyViewHolder
             holder.cv.setCardBackgroundColor(Color.parseColor("#cccc99"));
         else if (tableModelList.get(position).getStatus().equals("Unavailable"))
             holder.cv.setCardBackgroundColor(Color.parseColor("#999999"));
+        else if (tableModelList.get(position).getStatus().equals("OnGoing"))
+            holder.cv.setCardBackgroundColor(Color.parseColor("#9CCC65"));
         else
             holder.cv.setCardBackgroundColor(Color.parseColor("#2196F3"));
     }

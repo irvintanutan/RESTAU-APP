@@ -56,7 +56,6 @@
                 android:layout_alignParentLeft="true"
                 android:layout_weight="9"
                 android:scrollbars="none"
-
                 android:background="@drawable/gradient"
                 android:clipToPadding="false" />
 
@@ -138,7 +137,7 @@
                                 android:layout_height="match_parent"
                                 android:layout_margin="@dimen/_2sdp"
                                 android:textColor="@color/colorAccent"
-                                android:text="Dine In"
+                                android:text="Dine-In"
                                 android:textSize="@dimen/_15ssp"
                                 android:fontFamily="sans-serif-condensed"
                                 android:textStyle="bold" />
@@ -175,7 +174,7 @@
                                 android:layout_height="match_parent"
                                 android:layout_margin="@dimen/_2sdp"
                                 android:textColor="@color/colorAccent"
-                                android:text="Take Out"
+                                android:text="Take-Out"
                                 android:textSize="@dimen/_15ssp"
                                 android:fontFamily="sans-serif-condensed"
                                 android:textStyle="bold" />

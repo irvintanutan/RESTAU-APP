@@ -66,19 +66,18 @@ public class ModGlobal {
         return ind;
     }
 
-    public static String getLessPrice(int prod_id){
 
-        String less = "";
+    public static boolean isTableSelected(int id){
+        boolean ind = false;
 
-        for (MenuModel menuModel : menuModelList){
-
-                if (menuModel.getProd_id() == prod_id){
-                    less = menuModel.getLessPrice();
-                }
-
+        for (int a = 0  ; a < tableId.size() ; a++){
+            if (tableId.get(a) == id) {
+                ind = true;
+                break;
+            }
         }
 
-        return  less;
+        return ind;
     }
 
 }

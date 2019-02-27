@@ -478,7 +478,7 @@ public class CheckOutActivity extends AppCompatActivity {
                     try {
                         TableModel table = ModGlobal.tableModelList.get(position);
                         if (table.getStatus().equals("Occupied") || table.getStatus().equals("Unavailable") ||
-                                table.getStatus().equals("Reserved"))
+                                table.getStatus().equals("Reserved")  || table.getStatus().equals("OnGoing"))
                             Toast.makeText(getApplicationContext(), table.getName() + " is " + table.getStatus(), Toast.LENGTH_SHORT).show();
                         else {
                             if (table.getStatus().equals("Available")) {

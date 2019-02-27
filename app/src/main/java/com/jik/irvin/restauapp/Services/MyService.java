@@ -62,6 +62,8 @@ public class MyService extends Service {
                 JSONArray tables = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-tables-api", WebRequest.GET));
 
 
+                Log.e("tables " , tables.toString());
+
                 for (int i = 0; i < tables.length(); i++) {
                     JSONObject c = tables.getJSONObject(i);
 
@@ -69,6 +71,23 @@ public class MyService extends Service {
                                 c.getString("tbl_id"),
                                 c.getString("name"),
                                 c.getString("status")));
+
+                        if (ModGlobal.tableModelList.get(i).getStatus().equals("Available") &&
+                                ModGlobal.isTableSelected(Integer.parseInt(ModGlobal.tableModelList.get(i).getTableId()))){
+
+                            ModGlobal.tableModelList.set(i, new TableModel(
+                                    c.getString("tbl_id"),
+                                    c.getString("name"),
+                                    "Selected"));
+                        } else  if (ModGlobal.tableModelList.get(i).getStatus().equals("Occupied") &&
+                                ModGlobal.isTableSelected(Integer.parseInt(ModGlobal.tableModelList.get(i).getTableId()))){
+
+                            ModGlobal.tableModelList.set(i, new TableModel(
+                                    c.getString("tbl_id"),
+                                    c.getString("name"),
+                                    "OnGoing"));
+                        }
+
 
                 }
 
