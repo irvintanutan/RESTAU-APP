@@ -75,9 +75,9 @@ public class MainActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
 
-/*        username.setText("janedoe");
-        password.setText("janedoe");
-
+        username.setText("x");
+        password.setText("x");
+/*
         username.setText("xanderford");
         password.setText("xanderford");*/
 
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 JSONArray menuItems = new JSONArray(wr.makeWebServiceCall(databaseHelper.getBaseUrl() + "showlist-products-api", WebRequest.GET));
-
+                Log.e("asda" , menuItems.toString());
 
                 for (int i = 0; i < menuItems.length(); i++) {
                     JSONObject c = menuItems.getJSONObject(i);
@@ -323,9 +323,9 @@ public class MainActivity extends AppCompatActivity {
                     //startActivity(new Intent(MainActivity.this, CashierActivity.class));
                     finish();
                 } else if (ModGlobal.userModelList.get(0).getUserType().equals("Cashier")) {
-                   /* startActivity(new Intent(MainActivity.this, CashierActivity.class));
-                    finish();*/
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    startActivity(new Intent(MainActivity.this, CashierActivity.class));
+                    finish();
+                  /*  AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
                     builder.setTitle("Warning");
                     builder.setMessage("Cashier is not allowed to use this feature ");
@@ -341,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     AlertDialog alert = builder.create();
-                    alert.show();
+                    alert.show();*/
                 }
             }
         }

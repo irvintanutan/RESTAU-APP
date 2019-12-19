@@ -213,6 +213,8 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             @Override
             public void onLongClick(View view, int position) {
 
+
+
             }
         }));
 
@@ -248,6 +250,38 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             @Override
             public void onLongClick(View view, int position) {
 
+                final int p = position;
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(CashierActivity.this);
+
+                builder.setTitle("Confirm");
+                builder.setMessage("Are you sure you want to void " + ModGlobal.itemDetailsModelList.get(p).getMenuName() + " ?");
+
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        // Do nothing
+
+                        ModGlobal.itemDetailsModelList.remove(p);
+                        lineItemAdapter.notifyDataSetChanged();
+                        recyclerViewLineItem.smoothScrollToPosition(lineItemAdapter.getItemCount() - 1);
+                        computeTotal();
+                        countItems();
+
+                    }
+
+                });
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
 
             }
         }));
