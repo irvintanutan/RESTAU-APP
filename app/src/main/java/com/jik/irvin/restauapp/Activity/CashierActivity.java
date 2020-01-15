@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,11 +23,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -84,7 +87,8 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
     boolean isExist = false;
     private AlertDialog finalDialog = null;
     private String transType = "";
-
+    double totalTempDiscount = 0.00;
+    int tempDiscId = 0;
     private RecyclerView recyclerViewTable;
     private TableAdapter tableAdapter;
 
@@ -95,6 +99,11 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
     private Printer mPrinter = null;
 
+    EditText subTotalValue;
+    EditText discountValue;
+    EditText totalValue;
+    EditText cashValue;
+    EditText changeValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,7 +221,6 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
             @Override
             public void onLongClick(View view, int position) {
-
 
 
             }
@@ -338,7 +346,9 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             public void onLongClick(View view, int position) {
 
 
+                PopUpQuantity(position);
             }
+
         }));
 
 
@@ -495,6 +505,80 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
     }
 
+    public void PopUpQuantity(final int position) {
+
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.layout_quantity, null);
+
+
+        final EditText quantity = alertLayout.findViewById(R.id.quantity);
+        final Button apply = alertLayout.findViewById(R.id.apply);
+
+        apply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if (quantity.getText().toString().isEmpty()){
+
+                    Toast.makeText(CashierActivity.this, "Please Input a valid QUANTITY", Toast.LENGTH_SHORT).show();
+
+                }else {
+
+                    MenuModel menuModel = ModGlobal.menuModelListCopy.get(position);
+
+
+                    isExist = false;
+                    for (int a = 0; a < ModGlobal.itemDetailsModelList.size(); a++) {
+                        if (ModGlobal.itemDetailsModelList.get(a).getProdID() == menuModel.getProd_id()) {
+                            itemDetailsIndex = a;
+                            itemDetailsQty = Integer.parseInt(quantity.getText().toString());
+                            isExist = true;
+                        }
+                    }
+
+                    if (isExist) {
+
+                        ModGlobal.itemDetailsModelList.set(itemDetailsIndex, new ItemDetailsModel(menuModel.getProd_id(),
+                                menuModel.getPrice(), itemDetailsQty,
+                                menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition(), menuModel.getShortName()));
+                        lineItemAdapter.notifyDataSetChanged();
+
+                    } else {
+
+                        ModGlobal.itemDetailsModelList.add(new ItemDetailsModel(menuModel.getProd_id(),
+                                menuModel.getPrice(), Integer.parseInt(quantity.getText().toString()),
+                                menuModel.getImg(), menuModel.getName(), menuModel.getCat_id(), menuModel.getPosition(), menuModel.getShortName()));
+
+                        lineItemAdapter.notifyDataSetChanged();
+                        recyclerViewLineItem.smoothScrollToPosition(lineItemAdapter.getItemCount() - 1);
+
+                    }
+
+
+                    computeTotal();
+                    countItems();
+
+                    finalDialog.dismiss();
+                }
+            }
+        });
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        // this is set the view from XML inside AlertDialog
+        alert.setView(alertLayout);
+        // disallow cancel of AlertDialog on click of back button and outside touch
+
+        finalDialog = alert.create();
+        finalDialog.show();
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.width = (int) this.getResources().getDimension(R.dimen.width1);
+        lp.height = (int) this.getResources().getDimension(R.dimen.height1);
+
+        finalDialog.getWindow().setAttributes(lp);
+        //dialog.getWindow().setLayout(800, 400);
+
+    }
 
     public void PopUpTable() {
 
@@ -557,13 +641,19 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
     public void PopUpDiscount() {
 
+
+        totalTempDiscount = 0.00;
+        tempDiscId = 0;
+
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.discount_view, null);
 
-
+        final Button apply = alertLayout.findViewById(R.id.applyDiscount);
         final Spinner spinner = alertLayout.findViewById(R.id.spinner);
+        final EditText suggest = alertLayout.findViewById(R.id.suggestedDiscount);
+        final EditText actual = alertLayout.findViewById(R.id.actualDiscount);
 
-        List<DiscountModel> discountModels = ModGlobal.discountModelList;
+        final List<DiscountModel> discountModels = ModGlobal.discountModelList;
         ArrayList<String> values = new ArrayList<>();
         ArrayList<Integer> discountId = new ArrayList<>();
 
@@ -577,6 +667,38 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (discountModels.get(position).getLess_c() > 0.00) {
+
+                    suggest.setText(dec.format(discountModels.get(position).getLess_c()));
+                    totalTempDiscount = discountModels.get(position).getLess_c();
+                    tempDiscId = discountModels.get(position).getDiscId();
+
+                } else {
+
+                    totalTempDiscount = finalSubTotal * (discountModels.get(position).getLess_p() / 100);
+                    suggest.setText(dec.format(totalTempDiscount));
+                    tempDiscId = discountModels.get(position).getDiscId();
+
+                }
+
+
+            } // to close the onItemSelected
+
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+        apply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                actual.setText(Double.toString(totalTempDiscount));
+            }
+        });
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         // this is set the view from XML inside AlertDialog
@@ -590,7 +712,6 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-
                 dialog.dismiss();
             }
         });
@@ -600,19 +721,35 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                ModGlobal.discType = tempDiscId;
+                ModGlobal.discount = totalTempDiscount;
+                finalDiscount = totalTempDiscount;
+
+                finalTotal = finalSubTotal - finalDiscount;
+
+                subTotalValue.setText("₱ " + dec.format(finalSubTotal));
+                discountValue.setText("₱ " + dec.format(finalDiscount));
+                totalValue.setText("₱ " + dec.format(finalTotal));
+                cashValue.setText("₱ " + dec.format(finalCash));
+                double ch = finalCash - finalTotal;
+                finalChange = ch;
+                changeValue.setText("₱ " + dec.format(ch));
+                changeValue.setTextColor(Color.RED);
+
 
                 dialog.dismiss();
+
             }
 
         });
 
-        finalDialog = alert.create();
-        finalDialog.show();
+        AlertDialog dialog = alert.create();
+        dialog.show();
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.width = (int) this.getResources().getDimension(R.dimen.width);
         lp.height = (int) this.getResources().getDimension(R.dimen.height_payment);
 
-        finalDialog.getWindow().setAttributes(lp);
+        dialog.getWindow().setAttributes(lp);
         //dialog.getWindow().setLayout(800, 400);
     }
 
@@ -641,15 +778,15 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
         final CardView clear = alertLayout.findViewById(R.id.clear);
         final CardView clearDiscount = alertLayout.findViewById(R.id.clearDiscount);
         final CardView discount = alertLayout.findViewById(R.id.discount);
-        final CardView dineIn = alertLayout.findViewById(R.id.dineIn);
+        //final CardView dineIn = alertLayout.findViewById(R.id.dineIn);
         final CardView takeOut = alertLayout.findViewById(R.id.takeOut);
         final CardView close = alertLayout.findViewById(R.id.close);
 
-        final EditText subTotalValue = alertLayout.findViewById(R.id.subTotalValue);
-        final EditText discountValue = alertLayout.findViewById(R.id.discountValue);
-        final EditText totalValue = alertLayout.findViewById(R.id.totalValue);
-        final EditText cashValue = alertLayout.findViewById(R.id.cashValue);
-        final EditText changeValue = alertLayout.findViewById(R.id.changeValue);
+        subTotalValue = alertLayout.findViewById(R.id.subTotalValue);
+        discountValue = alertLayout.findViewById(R.id.discountValue);
+        totalValue = alertLayout.findViewById(R.id.totalValue);
+        cashValue = alertLayout.findViewById(R.id.cashValue);
+        changeValue = alertLayout.findViewById(R.id.changeValue);
 
 
         subTotalValue.setFocusable(false);
@@ -688,7 +825,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
             }
         });
 
-        dineIn.setOnClickListener(new View.OnClickListener() {
+        /*dineIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -739,7 +876,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
                 }
             }
-        });
+        });*/
 
 
         takeOut.setOnClickListener(new View.OnClickListener() {
@@ -768,7 +905,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(CashierActivity.this);
 
-                    builder.setTitle("TAKE OUT");
+                    builder.setTitle("CHECK OUT");
                     builder.setMessage("Are you sure you want to place the order ?");
 
                     builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -811,6 +948,19 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
                 ModGlobal.discType = 0;
                 discountValue.setText(dec.format(ModGlobal.discount));
                 discountValue.setTextColor(Color.BLACK);
+
+                finalTotal = finalSubTotal;
+                finalCash = 0.00;
+                finalChange = 0.00;
+
+                subTotalValue.setText("₱ " + dec.format(finalTotal));
+                discountValue.setText("₱ " + 0.00);
+                totalValue.setText("₱ " + dec.format(finalTotal));
+                cashValue.setText("₱ " + dec.format(finalCash));
+                double ch = finalCash - finalTotal;
+                finalChange = ch;
+                changeValue.setText("₱ " + dec.format(ch));
+                changeValue.setTextColor(Color.RED);
 
             }
         });
@@ -1203,7 +1353,7 @@ public class CashierActivity extends AppCompatActivity implements ReceiveListene
 
             if (!warning) {
 
-                runPrintReceiptSequence();
+                //runPrintReceiptSequence();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(serviceContext);
 

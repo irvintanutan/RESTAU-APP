@@ -22,6 +22,10 @@
     <dimen name="width">@dimen/_325sdp</dimen>
     <dimen name="height">@dimen/_225sdp</dimen>
 
+
+    <dimen name="width1">@dimen/_270sdp</dimen>
+    <dimen name="height1">@dimen/_90sdp</dimen>
+
     <dimen name="height_payment">@dimen/_250sdp</dimen>
     <dimen name="height_payment_view">@dimen/_200sdp</dimen>
     <dimen name="width_transaction">@dimen/_250sdp</dimen>

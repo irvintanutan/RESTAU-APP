@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
 
-        username.setText("x");
-        password.setText("x");
+        username.setText("EVA");
+        password.setText("1234");
 /*
         username.setText("xanderford");
         password.setText("xanderford");*/

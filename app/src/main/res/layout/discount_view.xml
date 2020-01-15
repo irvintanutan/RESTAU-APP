@@ -23,43 +23,61 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="@dimen/_5sdp"
-                android:text="# Of Person/s : "
-                android:textSize="@dimen/_7ssp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/minus"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_margin="@dimen/_2sdp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/minus" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".3"
+                    android:text="Suggested Discount:" />
 
-            <TextView
-                android:id="@+id/quantity"
-                android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/suggestedDiscount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".7"
+                    android:text=""
+                    android:enabled="false"
+                    android:imeOptions="actionNext"
+                    android:nextFocusRight="@+id/et_password"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/applyDiscount"
+                    android:text="APPLY"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></Button>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="@dimen/_5sdp"
-                android:text="1"
-                android:textSize="@dimen/_7ssp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/plus"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_margin="@dimen/_2sdp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/plus" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".3"
+                    android:text="Actual Discount:" />
+
+                <EditText
+                    android:id="@+id/actualDiscount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".7"
+                    android:text=""
+                    android:imeOptions="actionNext"
+                    android:nextFocusRight="@+id/et_password"
+                    android:singleLine="true" />
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>

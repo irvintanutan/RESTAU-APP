@@ -18,7 +18,7 @@ import java.util.List;
 public class ModGlobal {
 
     //public static String baseURL = "http://192.168.1.2/RESTAU-APP-BACKEND/resto-app/";
-    public static String baseURL = "http://192.168.88.60/RETAIL-APP-BACKEND/retail-app/";
+    public static String baseURL = "http://192.168.99.110/RETAIL-APP-BACKEND/retail-app/";
     public static List<MenuModel> menuModelList = new ArrayList<>();
     public static List<MenuModel> menuModelListCopy = new ArrayList<>();
     public static List<CategoryModel> categoryModelList = new ArrayList<>();
